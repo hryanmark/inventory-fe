@@ -1,11 +1,11 @@
 import React from 'react';
 import PermanentDrawer from './component/PermanentDrawer';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ItemPage from './page/ItemPage';
-import ItemUnitOfMeasurePage from './page//ItemUnitOfMeasurePage';
-import BrandPage from './page/BrandPage';
-import NoPage from './page//NoPage';
-import CategoryPage from './page/CategoryPage';
+import ItemPage from './pages/ItemPage/ItemPage';
+import ItemUnitOfMeasurePage from './pages/ItemUnitOfMeasurePage/ItemUnitOfMeasurePage';
+import BrandPage from './pages/BrandPage/BrandPage';
+import NoPage from './pages/NoPage';
+import CategoryPage from './pages/CategoryPage/CategoryPage';
 
 function App() {
   return (

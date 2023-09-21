@@ -12,11 +12,11 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import { DataGrid } from '@mui/x-data-grid';
 import Fab from '@mui/material/Fab';
-import SideNavigationBar from '../component/SideNavigationBar';
-import Header from '../component/Header';
-import BreadCrumbs from '../component/BreadCrumbs';
+import SideNavigationBar from '../../component/SideNavigationBar';
+import Header from '../../component/Header';
+import BreadCrumbs from '../../component/BreadCrumbs';
 import { useState, useEffect } from 'react';
-import { API_URL } from '../config';
+import { API_URL } from '../../config';
 import axios from 'axios';
 
 export default function ItemPage() {

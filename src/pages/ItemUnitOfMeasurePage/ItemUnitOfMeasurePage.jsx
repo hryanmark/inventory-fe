@@ -1,31 +1,31 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import { DataGrid } from "@mui/x-data-grid";
-import Fab from "@mui/material/Fab";
-import SideNavigationBar from "../component/SideNavigationBar";
-import Header from "../component/Header";
-import BreadCrumbs from "../component/BreadCrumbs";
-import { useState, useEffect } from "react";
-import { API_URL } from "../config";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import { DataGrid } from '@mui/x-data-grid';
+import Fab from '@mui/material/Fab';
+import SideNavigationBar from '../../component/SideNavigationBar';
+import Header from '../../component/Header';
+import BreadCrumbs from '../../component/BreadCrumbs';
+import { useState, useEffect } from 'react';
+import { API_URL } from '../../config';
 import axios from 'axios';
 
-export default function BrandPage() {
+export default function ItemUnitOfMeasurePage() {
 
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
 
   useEffect(() => {
-    const apiUrl = API_URL + '/brand';
+    const apiUrl = API_URL + '/item_unit_of_measure';
 
     axios.get(apiUrl)
       .then(response => {
@@ -46,10 +46,6 @@ export default function BrandPage() {
         console.error('Error:', error);
       });
   }, []);
-  
-  const onAdd =() => {
-    alert(JSON.stringify(data));
-  }
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -76,7 +72,7 @@ export default function BrandPage() {
                 id="panel1a-header"
                 defaultExpanded="false"
               >
-                <Typography>Brand</Typography>
+                <Typography>Item Unit Of Measure</Typography>
               </AccordionSummary>
 
               <Divider />
@@ -104,7 +100,6 @@ export default function BrandPage() {
                         size="medium"
                         maxWidth="200"
                         color="success"
-                        onClick={onAdd}
                       >
                         Add
                       </Button>
