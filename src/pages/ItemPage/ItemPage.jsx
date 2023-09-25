@@ -18,11 +18,14 @@ import BreadCrumbs from '../../component/BreadCrumbs';
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import axios from 'axios';
+import DialogPopup from '../../component/DialogPopup';
+import ItemForm from './ItemForm';
 
 export default function ItemPage() {
 
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
+  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     const apiUrl = API_URL + '/item';
@@ -47,6 +50,22 @@ export default function ItemPage() {
       });
   }, []);
 
+  const onAdd =() => {
+    onDialogOpen();
+  }
+
+  const onDialogOpen = () => {
+    setOpen(true);
+  };
+
+  const onDialogClose = () => {
+    setOpen(false);
+  };
+
+  const onDialogSubmit = () => {
+    setOpen(false);
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -62,6 +81,14 @@ export default function ItemPage() {
         <Toolbar />
 
         <BreadCrumbs />
+
+        <DialogPopup
+        title="Item"
+        open={open} 
+        handleClose={onDialogClose}
+        onSubmit={onDialogSubmit}>
+          <ItemForm></ItemForm>
+        </DialogPopup>
 
         <Card sx={{ marginTop: "2%" }}>
           <div>
@@ -100,6 +127,7 @@ export default function ItemPage() {
                         size="medium"
                         maxWidth="200"
                         color="success"
+                        onClick={onAdd}
                       >
                         Add
                       </Button>
