@@ -6,7 +6,7 @@ import ItemUnitOfMeasurePage from './pages/ItemUnitOfMeasurePage/ItemUnitOfMeasu
 import BrandPage from './pages/BrandPage/BrandPage';
 import NoPage from './pages/NoPage';
 import CategoryPage from './pages/CategoryPage/CategoryPage';
-import BrandForm from './pages/BrandPage/BrandForm';
+import ItemForm from './pages/ItemPage/ItemForm';
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
           <Route path="/itemunitofmeasure" element={<ItemUnitOfMeasurePage />}/>
           <Route path="/brandpage" element={<BrandPage />}/>
           <Route path="/categorypage" element={<CategoryPage />}/>
-          <Route path="/brandform" element={<BrandForm />}/>
+          <Route path="/itempage/itemform" element={<ItemForm/>}/>
           <Route path="*" element={<NoPage />}/>
         </Routes>
       </Router>

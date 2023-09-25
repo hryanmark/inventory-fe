@@ -18,14 +18,13 @@ import BreadCrumbs from '../../component/BreadCrumbs';
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import axios from 'axios';
-import DialogPopup from '../../component/DialogPopup';
-import ItemForm from './ItemForm';
+import { useNavigate } from 'react-router-dom';
 
 export default function ItemPage() {
 
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
-  const [open, setOpen] = React.useState(false);
+  const history = useNavigate();
 
   useEffect(() => {
     const apiUrl = API_URL + '/item';
@@ -51,20 +50,9 @@ export default function ItemPage() {
   }, []);
 
   const onAdd =() => {
-    onDialogOpen();
+    history('/itempage/itemform');
   }
 
-  const onDialogOpen = () => {
-    setOpen(true);
-  };
-
-  const onDialogClose = () => {
-    setOpen(false);
-  };
-
-  const onDialogSubmit = () => {
-    setOpen(false);
-  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -73,7 +61,7 @@ export default function ItemPage() {
       <Header />
 
       <SideNavigationBar />
-
+      
       <Box
         component="main"
         sx={{ flexGrow: 1, p: 3, bgcolor: "#eceff1", minHeight: "100vh" }}
@@ -81,14 +69,6 @@ export default function ItemPage() {
         <Toolbar />
 
         <BreadCrumbs />
-
-        <DialogPopup
-        title="Item"
-        open={open} 
-        handleClose={onDialogClose}
-        onSubmit={onDialogSubmit}>
-          <ItemForm></ItemForm>
-        </DialogPopup>
 
         <Card sx={{ marginTop: "2%" }}>
           <div>

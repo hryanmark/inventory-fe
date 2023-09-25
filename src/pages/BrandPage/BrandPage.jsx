@@ -18,14 +18,11 @@ import BreadCrumbs from "../../component/BreadCrumbs";
 import { useState, useEffect } from "react";
 import { API_URL } from "../../config";
 import axios from 'axios';
-import DialogPopup from "../../component/DialogPopup";
-import BrandForm from "./BrandForm";
 
 export default function BrandPage() {
 
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
-  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     const apiUrl = API_URL + '/brand';
@@ -51,20 +48,7 @@ export default function BrandPage() {
   }, []);
   
   const onAdd =() => {
-    onDialogOpen();
   }
-
-  const onDialogOpen = () => {
-    setOpen(true);
-  };
-
-  const onDialogClose = () => {
-    setOpen(false);
-  };
-
-  const onDialogSubmit = () => {
-    setOpen(false);
-  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -81,16 +65,6 @@ export default function BrandPage() {
         <Toolbar />
 
         <BreadCrumbs />
-        
-        <DialogPopup 
-        title="Brand"
-        open={open} 
-        handleClose={onDialogClose}
-        onSubmit={onDialogSubmit}>
-
-          <BrandForm />
-          
-        </DialogPopup>
         
         <Card sx={{ marginTop: "2%" }}>
           <div>
