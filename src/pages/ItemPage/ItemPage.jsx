@@ -11,7 +11,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import { DataGrid } from '@mui/x-data-grid';
-import Fab from '@mui/material/Fab';
 import SideNavigationBar from '../../component/SideNavigationBar';
 import Header from '../../component/Header';
 import BreadCrumbs from '../../component/BreadCrumbs';
@@ -19,6 +18,7 @@ import { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import FloatingButtons from '../../component/FloatingButtons';
 
 export default function ItemPage() {
 
@@ -146,24 +146,7 @@ export default function ItemPage() {
             />
           </div>
         </Card>
-        <Box
-          sx={{
-            position: "fixed",
-            bottom: "2rem",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            gap: "1rem",
-          }}
-        >
-          <Fab color="primary" aria-label="add">
-            View
-          </Fab>
-          <Fab color="secondary" aria-label="edit">
-            Edit
-          </Fab>
-          <Fab variant="extended">Delete</Fab>
-        </Box>
+        <FloatingButtons />
       </Box>
     </Box>
   );
