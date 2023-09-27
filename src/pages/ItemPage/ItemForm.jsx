@@ -7,6 +7,9 @@ import Header from '../../component/Header';
 import SideNavigationBar from '../../component/SideNavigationBar';
 import BreadCrumbs from '../../component/BreadCrumbs';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { API_URL } from '../../config';
+import axios from 'axios';
 
 export default function ItemForm() {
   
@@ -17,14 +20,83 @@ export default function ItemForm() {
   }
 
   const onCancel = () => { 
-    history('/itempage');
+    // history('/itempage');
+    alert(JSON.stringify(brand_data));
+  }
+  
+  const [brand, setBrand] = useState('');
+  const [brand_data, setBrandData] = useState([]);
+  const [category, setCategory] = useState('');
+  const [category_data, setCategoryData] = useState([]);
+  const [status, setStatus] = useState('');
+  const [updated_at, setUpdatedAt] = useState('');
+  const [created_by, setCreatedBy] = useState('');
+  const [updated_by, setUpdatedBy] = useState('');
+  const [created_at, setCreatedAt] = useState('');
+
+
+  const onBrandChange = (event) => {
+    const selectedValue = event.target.value;
+
+    setBrand(event.target.value);
+
+    if(selectedValue === "#new"){
+      setBrand("");
+      alert("Open dialog popup");
+    }
   }
 
-  const [age, setAge] = React.useState('');
+  const onCategoryChange = (event) => {
+    const selectedValue = event.target.value;
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
+    setCategory(event.target.value);
+
+    if(selectedValue === "#new"){
+      setCategory("");
+      alert("Open Dialog Popup")
+    }
   };
+
+  const onStatusChange = (event) => {
+    setStatus(event.target.value);
+  }
+
+  const onUpdatedAtChange = (event) => {
+    setUpdatedAt(event.target.value);
+  }
+
+  const onCreatedByChange = (event) => {
+    setCreatedBy(event.target.value);
+  }
+
+  const onUpdatedByChange = (event) => {
+    setUpdatedBy(event.target.value);
+  }
+
+  const onCreatedAtChange = (event) => {
+    setCreatedAt(event.target.value);
+  }
+
+  useEffect(() => {
+    const apiUrl = API_URL + '/brand';
+
+    axios.get(apiUrl)
+      .then(response => {
+        setBrandData(response.data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+    });
+    
+    axios.get(API_URL + '/category')
+      .then(response => {
+        setCategoryData(response.data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+    });
+      
+  }, []);
   
   return (
     <div>
@@ -95,14 +167,16 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={brand}
                     label="Brand"
-                    onChange={handleChange}
+                    onChange={onBrandChange}
                     size="small"
                   >
-                    <MenuItem value="">Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    <MenuItem value="#new">Create New</MenuItem>
+                    {brand_data.map((brand, index) => (
+                      <MenuItem key={index} value={brand.id}>{brand.description}</MenuItem>
+                    ))}
+
                   </Select>
                 </FormControl>
               </Box>
@@ -112,14 +186,15 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={category}
                     label="Category"
-                    onChange={handleChange}
+                    onChange={onCategoryChange}
                     size="small"
                   >
-                    <MenuItem value="">Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    <MenuItem value="#new">Create New</MenuItem>
+                    {category_data.map((category, index) => (
+                      <MenuItem key={index} value={category.id}>{category.description}</MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Box>
@@ -178,14 +253,14 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={status}
                     label="Status"
-                    onChange={handleChange}
+                    onChange={onStatusChange}
                     size="small"
                   >
-                    <MenuItem value="">Pending</MenuItem>
-                    <MenuItem value={20}>Delivered</MenuItem>
-                    <MenuItem value={30}>Something</MenuItem>
+                    <MenuItem value={1}>Pending</MenuItem>
+                    <MenuItem value={2}>Delivered</MenuItem>
+                    <MenuItem value={3}>Something</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -195,14 +270,14 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={updated_at}
                     label="Updated At"
-                    onChange={handleChange}
+                    onChange={onUpdatedAtChange}
                     size="small"
                   >
-                    <MenuItem value="">Pending</MenuItem>
-                    <MenuItem value={20}>Delivered</MenuItem>
-                    <MenuItem value={30}>Something</MenuItem>
+                    <MenuItem value="">Japan</MenuItem>
+                    <MenuItem value={20}>Philippines</MenuItem>
+                    <MenuItem value={30}>Vietnam</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -214,9 +289,9 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={created_by}
                     label="Created By"
-                    onChange={handleChange}
+                    onChange={onCreatedByChange}
                     size="small"
                   >
                     <MenuItem value="">Ryan</MenuItem>
@@ -231,9 +306,9 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={updated_by}
                     label="Updated By"
-                    onChange={handleChange}
+                    onChange={onUpdatedByChange}
                     size="small"
                   >
                     <MenuItem value="">Ryan</MenuItem>
@@ -248,9 +323,9 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={age}
+                    value={created_at}
                     label="Created At"
-                    onChange={handleChange}
+                    onChange={onCreatedAtChange}
                     size="small"
                   >
                     <MenuItem value="">Japan</MenuItem>
