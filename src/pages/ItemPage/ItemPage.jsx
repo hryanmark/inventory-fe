@@ -15,38 +15,57 @@ import SideNavigationBar from '../../component/SideNavigationBar';
 import Header from '../../component/Header';
 import BreadCrumbs from '../../component/BreadCrumbs';
 import { useState, useEffect } from 'react';
-import { API_URL } from '../../config';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import FloatingButtons from '../../component/FloatingButtons';
+import { getData } from '../../services/apiService';
 
 export default function ItemPage() {
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    id: "",
+    brand_id: "",
+    category_id: "",
+    title: "",
+    description: "",
+    SKU: "",
+    base_uom: "",
+    sales_uom: "",
+    purchase_uom: "",
+    unit_cost: "",
+    minimum_stock_level: "",
+    maximum_stock_level: "",
+    status: "",
+    created_by: "",
+    updated_by: "",
+    created_at: "",
+    updated_at: "",
+  });
   const [columns, setColumns] = useState([]);
   const history = useNavigate();
 
+  const fetchData = async () => {
+    try {
+      const result = await getData('/item');
+      
+      setData(result);
+
+      if (result.length > 0){
+        const keys = Object.keys(result[0]);
+        const generatedColumns = keys.map((key) => ({
+          field: key,
+          headerName: key.toUpperCase(),
+          width: 150,
+        }));
+
+        setColumns(generatedColumns);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
-    const apiUrl = API_URL + '/item';
-
-    axios.get(apiUrl)
-      .then(response => {
-        setData(response.data);
-
-        if (response.data.length > 0){
-          const keys = Object.keys(response.data[0]);
-          const generatedColumns = keys.map((key) => ({
-            field: key,
-            headerName: key.toUpperCase(),
-            width: 150,
-          }));
-
-          setColumns(generatedColumns);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+    fetchData();
   }, []);
 
   const onAdd =() => {

@@ -15,9 +15,8 @@ import SideNavigationBar from "../../component/SideNavigationBar";
 import Header from "../../component/Header";
 import BreadCrumbs from "../../component/BreadCrumbs";
 import { useState, useEffect } from "react";
-import { API_URL } from "../../config";
-import axios from 'axios';
 import FloatingButtons from "../../component/FloatingButtons";
+import { getData } from "../../services/apiService";
 
 export default function BrandPage() {
 
@@ -25,14 +24,15 @@ export default function BrandPage() {
   const [columns, setColumns] = useState([]);
 
   useEffect(() => {
-    const apiUrl = API_URL + '/brand';
 
-    axios.get(apiUrl)
-      .then(response => {
-        setData(response.data);
+    async function fetchData(){
+      try {
+        const result = await getData('/brand');
+        
+        setData(result);
 
-        if (response.data.length > 0){
-          const keys = Object.keys(response.data[0]);
+        if (result.length > 0){
+          const keys = Object.keys(result[0]);
           const generatedColumns = keys.map((key) => ({
             field: key,
             headerName: key.toUpperCase(),
@@ -41,10 +41,12 @@ export default function BrandPage() {
 
           setColumns(generatedColumns);
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchData();
   }, []);
   
   const onAdd =() => {

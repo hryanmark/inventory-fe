@@ -8,37 +8,61 @@ import SideNavigationBar from '../../component/SideNavigationBar';
 import BreadCrumbs from '../../component/BreadCrumbs';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { API_URL } from '../../config';
-import axios from 'axios';
+import { getData, postData } from '../../services/apiService';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function ItemForm() {
   
   const history = useNavigate();
 
-  const onSubmit = () => {
-    history('/itempage');
-  }
-
-  const onCancel = () => { 
-    // history('/itempage');
-    alert(JSON.stringify(brand_data));
-  }
-  
   const [brand, setBrand] = useState('');
   const [brand_data, setBrandData] = useState([]);
   const [category, setCategory] = useState('');
   const [category_data, setCategoryData] = useState([]);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState(0);
   const [updated_at, setUpdatedAt] = useState('');
   const [created_by, setCreatedBy] = useState('');
   const [updated_by, setUpdatedBy] = useState('');
   const [created_at, setCreatedAt] = useState('');
 
+  const [formData, setFormData] = useState({
+    id: uuidv4, //auto generated
+    brand_id: "",
+    category_id: "",
+    title: "", //item name
+    description: "",
+    sku: "IT-5",
+    base_uom: "",
+    sales_uom: "",
+    purchase_uom: "",
+    unit_cost: "",
+    minimum_stock_level: "",
+    maximum_stock_level: "",
+    status: "",
+    created_by: "",
+    updated_by: "",
+    created_at: "",
+    updated_at: "",
+  });
+
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  const onSubmit = async () => {
+    postItem();
+  }
+
+  const onCancel = () => { 
+    history('/itempage');
+  }
 
   const onBrandChange = (event) => {
     const selectedValue = event.target.value;
+    const brandId = selectedValue.id;
 
     setBrand(event.target.value);
+    setFormData({ ...formData, "brand_id": brandId });
 
     if(selectedValue === "#new"){
       setBrand("");
@@ -48,8 +72,10 @@ export default function ItemForm() {
 
   const onCategoryChange = (event) => {
     const selectedValue = event.target.value;
+    const categoryId = selectedValue.id; 
 
-    setCategory(event.target.value);
+    setCategory(selectedValue);
+    setFormData({ ...formData, "category_id": categoryId });
 
     if(selectedValue === "#new"){
       setCategory("");
@@ -58,43 +84,81 @@ export default function ItemForm() {
   };
 
   const onStatusChange = (event) => {
-    setStatus(event.target.value);
+    const selectedValue = event.target.value;
+
+    setStatus(selectedValue);
+    setFormData({ ...formData, "status": selectedValue });
   }
 
   const onUpdatedAtChange = (event) => {
+    const selectedValue = event.target.value;
+    
     setUpdatedAt(event.target.value);
+    setFormData({ ...formData, "updated_at": selectedValue });
   }
 
   const onCreatedByChange = (event) => {
+    const selectedValue = event.target.value;
+
     setCreatedBy(event.target.value);
+    setFormData({ ...formData, "created_by": selectedValue });
   }
 
   const onUpdatedByChange = (event) => {
+    const selectedValue = event.target.value;
+
     setUpdatedBy(event.target.value);
+    setFormData({ ...formData, "updated_by": selectedValue });
   }
 
   const onCreatedAtChange = (event) => {
+    const selectedValue = event.target.value;
+
     setCreatedAt(event.target.value);
+    setFormData({ ...formData, "created_at": selectedValue });
+  }
+
+  const fetchBrand = async () => {
+    try {
+      const result = await getData('/brand');
+
+      setBrandData(result);
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const fetchCategory = async () => {
+    try {
+      const result = await getData('/category');
+      
+      setCategoryData(result);
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const postItem = async () => {
+    try {
+      const result = await postData('/item', formData);
+
+      alert("post created : " + result);
+      history('/itempage');
+
+    } catch (error) {
+      // Handle error, e.g., display an error message to the user
+      console.error(error);
+    } finally {
+    }
   }
 
   useEffect(() => {
-    const apiUrl = API_URL + '/brand';
 
-    axios.get(apiUrl)
-      .then(response => {
-        setBrandData(response.data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-    });
+    fetchBrand();
     
-    axios.get(API_URL + '/category')
-      .then(response => {
-        setCategoryData(response.data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-    });
+    fetchCategory();
       
   }, []);
   
@@ -143,6 +207,10 @@ export default function ItemForm() {
                 sx={{ mt: 3, mr: 1, mb: 1, ml: 3, width: '10%' }}
                 variant="outlined"
                 size="small"
+                disabled="true"
+                name="sku"
+                value={formData.sku}
+                onChange={handleFormChange}
               />
               <TextField
                 label="Item Name"
@@ -150,6 +218,9 @@ export default function ItemForm() {
                 sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: '15%' }}
                 variant="outlined"
                 size="small"
+                name="title"
+                value={formData.title}
+                onChange={handleFormChange}
               />
               <TextField
                 label="Description"
@@ -157,6 +228,9 @@ export default function ItemForm() {
                 sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: '30%' }}
                 variant="outlined"
                 size="small"
+                name="description"
+                value={formData.description}
+                onChange={handleFormChange}
               />
             </div>
 
@@ -167,14 +241,16 @@ export default function ItemForm() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={brand}
+                    value={brand} //object
                     label="Brand"
                     onChange={onBrandChange}
                     size="small"
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {brand_data.map((brand, index) => (
-                      <MenuItem key={index} value={brand.id}>{brand.description}</MenuItem>
+                      <MenuItem 
+                      key={index} 
+                      value={brand}>{brand.code}</MenuItem>
                     ))}
 
                   </Select>
@@ -193,7 +269,7 @@ export default function ItemForm() {
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {category_data.map((category, index) => (
-                      <MenuItem key={index} value={category.id}>{category.description}</MenuItem>
+                      <MenuItem key={index} value={category}>{category.description}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -204,6 +280,9 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '25%' }}
                   variant="outlined"
                   size="small"
+                  name="base_uom"
+                  value={formData.base_uom}
+                  onChange={handleFormChange}
                 />
             </div>
             <div>
@@ -213,6 +292,9 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: '15%' }}
                   variant="outlined"
                   size="small"
+                  name="sales_uom"
+                  value={formData.sales_uom}
+                  onChange={handleFormChange}
                 />
               <TextField
                   label="Purchase Unit Of Measure"
@@ -220,6 +302,9 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '15%' }}
                   variant="outlined"
                   size="small"
+                  name="purchase_uom"
+                  value={formData.purchase_uom}
+                  onChange={handleFormChange}
                 />
               <TextField
                   label="Unit Cost"
@@ -228,6 +313,9 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '25%' }}
                   variant="outlined"
                   size="small"
+                  name="unit_cost"
+                  value={formData.unit_cost}
+                  onChange={handleFormChange}
                 />
             </div>
             <div style={{ display: "flex" }}>
@@ -238,6 +326,9 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: '13%' }}
                   variant="outlined"
                   size="small"
+                  name="minimum_stock_level"
+                  value={formData.minimum_stock_level}
+                  onChange={handleFormChange}
                 />
               <TextField
                   label="Maximum Stock Level"
@@ -246,6 +337,9 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '13%' }}
                   variant="outlined"
                   size="small"
+                  name="maximum_stock_level"
+                  value={formData.maximum_stock_level}
+                  onChange={handleFormChange}
                 />
               <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '13%' }}>
                 <FormControl fullWidth>
@@ -275,9 +369,9 @@ export default function ItemForm() {
                     onChange={onUpdatedAtChange}
                     size="small"
                   >
-                    <MenuItem value="">Japan</MenuItem>
-                    <MenuItem value={20}>Philippines</MenuItem>
-                    <MenuItem value={30}>Vietnam</MenuItem>
+                    <MenuItem value="Japan">Japan</MenuItem>
+                    <MenuItem value="Philippines">Philippines</MenuItem>
+                    <MenuItem value="Vietnam">Vietnam</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -294,9 +388,9 @@ export default function ItemForm() {
                     onChange={onCreatedByChange}
                     size="small"
                   >
-                    <MenuItem value="">Ryan</MenuItem>
-                    <MenuItem value={20}>Vincent</MenuItem>
-                    <MenuItem value={30}>Joseph</MenuItem>
+                    <MenuItem value="Ryan">Ryan</MenuItem>
+                    <MenuItem value="Vincent">Vincent</MenuItem>
+                    <MenuItem value="Joseph">Joseph</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -311,9 +405,9 @@ export default function ItemForm() {
                     onChange={onUpdatedByChange}
                     size="small"
                   >
-                    <MenuItem value="">Ryan</MenuItem>
-                    <MenuItem value={20}>Vincent</MenuItem>
-                    <MenuItem value={30}>Joseph</MenuItem>
+                    <MenuItem value="Ryan">Ryan</MenuItem>
+                    <MenuItem value="Vincent">Vincent</MenuItem>
+                    <MenuItem value="Joseph">Joseph</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -328,9 +422,9 @@ export default function ItemForm() {
                     onChange={onCreatedAtChange}
                     size="small"
                   >
-                    <MenuItem value="">Japan</MenuItem>
-                    <MenuItem value={20}>Philippines</MenuItem>
-                    <MenuItem value={30}>Vietnam</MenuItem>
+                    <MenuItem value="Japan">Japan</MenuItem>
+                    <MenuItem value="Philippines">Philippines</MenuItem>
+                    <MenuItem value="Vietnam">Vietnam</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
