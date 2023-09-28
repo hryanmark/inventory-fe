@@ -45,7 +45,7 @@ export default function ItemPage() {
 
   const handleSelectionModelChange = (selectionModel) => {
     setSelectedRows(selectionModel);
-  };
+  }
 
   const fetchData = async () => {
     try {
@@ -66,7 +66,7 @@ export default function ItemPage() {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   useEffect(() => {
     fetchData();
@@ -74,20 +74,20 @@ export default function ItemPage() {
 
   const onAdd = () => {
     history("/itempage/itemform");
-  };
+  }
 
   const onView = () => {
     alert("View");
-  };
+  }
 
   const onEdit = () => {
     alert("Edit");
-  };
+  }
 
   const onDelete = async () => {
     try {
       if (selectedRows.length > 0) {
-        
+
         const result = await deleteData(`/item/${selectedRows}`);
         console.log("Deleted result: " + JSON.stringify(result));
 
@@ -102,7 +102,7 @@ export default function ItemPage() {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
