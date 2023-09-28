@@ -1,7 +1,7 @@
 import { Box, Fab } from "@mui/material";
 
 
-export default function FloatingButtons(){
+export default function FloatingButtons(props){
     return (
         <Box
           sx={{
@@ -13,13 +13,13 @@ export default function FloatingButtons(){
             gap: "1rem",
           }}
         >
-          <Fab color="primary" aria-label="add">
+          <Fab color="primary" aria-label="add" onClick={props.view}>
             View
           </Fab>
-          <Fab color="secondary" aria-label="edit">
+          <Fab color="secondary" aria-label="edit" onClick={props.edit}>
             Edit
           </Fab>
-          <Fab variant="extended">Delete</Fab>
+          <Fab variant="extended" onClick={props.delete}>Delete</Fab>
         </Box>
     )
 }

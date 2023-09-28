@@ -1,26 +1,25 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import { DataGrid } from '@mui/x-data-grid';
-import SideNavigationBar from '../../component/SideNavigationBar';
-import Header from '../../component/Header';
-import BreadCrumbs from '../../component/BreadCrumbs';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import FloatingButtons from '../../component/FloatingButtons';
-import { getData } from '../../services/apiService';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import { DataGrid } from "@mui/x-data-grid";
+import SideNavigationBar from "../../component/SideNavigationBar";
+import Header from "../../component/Header";
+import BreadCrumbs from "../../component/BreadCrumbs";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import FloatingButtons from "../../component/FloatingButtons";
+import { deleteData, getData } from "../../services/apiService";
 
 export default function ItemPage() {
-
   const [data, setData] = useState({
     id: "",
     brand_id: "",
@@ -42,14 +41,19 @@ export default function ItemPage() {
   });
   const [columns, setColumns] = useState([]);
   const history = useNavigate();
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleSelectionModelChange = (selectionModel) => {
+    setSelectedRows(selectionModel);
+  };
 
   const fetchData = async () => {
     try {
-      const result = await getData('/item');
-      
+      const result = await getData("/item");
+
       setData(result);
 
-      if (result.length > 0){
+      if (result.length > 0) {
         const keys = Object.keys(result[0]);
         const generatedColumns = keys.map((key) => ({
           field: key,
@@ -62,16 +66,43 @@ export default function ItemPage() {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const onAdd =() => {
-    history('/itempage/itemform');
-  }
+  const onAdd = () => {
+    history("/itempage/itemform");
+  };
 
+  const onView = () => {
+    alert("View");
+  };
+
+  const onEdit = () => {
+    alert("Edit");
+  };
+
+  const onDelete = async () => {
+    try {
+      if (selectedRows.length > 0) {
+        
+        const result = await deleteData(`/item/${selectedRows}`);
+        console.log("Deleted result: " + JSON.stringify(result));
+
+        const updatedData = data.filter(
+          (post) => !selectedRows.includes(post.id)
+        );
+
+        setData(updatedData);
+      } else {
+        alert("Select a row to delete.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -80,7 +111,7 @@ export default function ItemPage() {
       <Header />
 
       <SideNavigationBar />
-      
+
       <Box
         component="main"
         sx={{ flexGrow: 1, p: 3, bgcolor: "#eceff1", minHeight: "100vh" }}
@@ -162,10 +193,12 @@ export default function ItemPage() {
               }}
               pageSizeOptions={[5, 10]}
               checkboxSelection
+              rowSelection={selectedRows}
+              onRowSelectionModelChange={handleSelectionModelChange}
             />
           </div>
         </Card>
-        <FloatingButtons />
+        <FloatingButtons view={onView} edit={onEdit} delete={onDelete} />
       </Box>
     </Box>
   );
