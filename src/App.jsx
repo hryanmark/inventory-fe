@@ -18,7 +18,9 @@ function App() {
           <Route path="/itemunitofmeasure" element={<ItemUnitOfMeasurePage />}/>
           <Route path="/brandpage" element={<BrandPage />}/>
           <Route path="/categorypage" element={<CategoryPage />}/>
-          <Route path="/itempage/itemform" element={<ItemForm/>}/>
+          <Route path="/itempage/itemform/new" element={<ItemForm mode={"new"}/>}/>
+          <Route path="/itempage/itemform/view" element={<ItemForm mode={"view"}/>}/>
+          <Route path="/itempage/itemform/edit" element={<ItemForm mode={"edit"}/>}/>
           <Route path="*" element={<NoPage />}/>
         </Routes>
       </Router>

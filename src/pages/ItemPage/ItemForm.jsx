@@ -11,9 +11,10 @@ import { useState, useEffect } from 'react';
 import { getData, postData } from '../../services/apiService';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function ItemForm() {
+export default function ItemForm(props) {
   
   const history = useNavigate();
+  const [mode, setMode] = useState('');
 
   const [brand, setBrand] = useState('');
   const [brand_data, setBrandData] = useState([]);
@@ -156,11 +157,21 @@ export default function ItemForm() {
 
   useEffect(() => {
 
+    setMode(props.mode);
+
+    if (mode === "new") {
+      alert("form new");
+    } else if (mode === "view") {
+      alert("form is view mode");
+    } else if (mode === "edit") {
+      alert("form is edit mode");
+    }
+
     fetchBrand();
     
     fetchCategory();
       
-  }, []);
+  }, [mode]);
   
   return (
     <div>
@@ -218,6 +229,7 @@ export default function ItemForm() {
                 sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: '15%' }}
                 variant="outlined"
                 size="small"
+                disabled = {mode === "view" ? true : false}
                 name="title"
                 value={formData.title}
                 onChange={handleFormChange}
@@ -228,6 +240,7 @@ export default function ItemForm() {
                 sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: '30%' }}
                 variant="outlined"
                 size="small"
+                disabled = {mode === "view" ? true : false}
                 name="description"
                 value={formData.description}
                 onChange={handleFormChange}
@@ -245,6 +258,7 @@ export default function ItemForm() {
                     label="Brand"
                     onChange={onBrandChange}
                     size="small"
+                    disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {brand_data.map((brand, index) => (
@@ -266,6 +280,7 @@ export default function ItemForm() {
                     label="Category"
                     onChange={onCategoryChange}
                     size="small"
+                    disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {category_data.map((category, index) => (
@@ -280,6 +295,7 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '25%' }}
                   variant="outlined"
                   size="small"
+                  disabled = {mode === "view" ? true : false}
                   name="base_uom"
                   value={formData.base_uom}
                   onChange={handleFormChange}
@@ -292,6 +308,7 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: '15%' }}
                   variant="outlined"
                   size="small"
+                  disabled = {mode === "view" ? true : false}
                   name="sales_uom"
                   value={formData.sales_uom}
                   onChange={handleFormChange}
@@ -302,6 +319,7 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '15%' }}
                   variant="outlined"
                   size="small"
+                  disabled = {mode === "view" ? true : false}
                   name="purchase_uom"
                   value={formData.purchase_uom}
                   onChange={handleFormChange}
@@ -313,6 +331,7 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '25%' }}
                   variant="outlined"
                   size="small"
+                  disabled = {mode === "view" ? true : false}
                   name="unit_cost"
                   value={formData.unit_cost}
                   onChange={handleFormChange}
@@ -326,6 +345,7 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: '13%' }}
                   variant="outlined"
                   size="small"
+                  disabled = {mode === "view" ? true : false}
                   name="minimum_stock_level"
                   value={formData.minimum_stock_level}
                   onChange={handleFormChange}
@@ -337,6 +357,7 @@ export default function ItemForm() {
                   sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: '13%' }}
                   variant="outlined"
                   size="small"
+                  disabled = {mode === "view" ? true : false}
                   name="maximum_stock_level"
                   value={formData.maximum_stock_level}
                   onChange={handleFormChange}
@@ -351,6 +372,7 @@ export default function ItemForm() {
                     label="Status"
                     onChange={onStatusChange}
                     size="small"
+                    disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value={1}>Pending</MenuItem>
                     <MenuItem value={2}>Delivered</MenuItem>
@@ -368,6 +390,7 @@ export default function ItemForm() {
                     label="Updated At"
                     onChange={onUpdatedAtChange}
                     size="small"
+                    disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value="Japan">Japan</MenuItem>
                     <MenuItem value="Philippines">Philippines</MenuItem>
@@ -387,6 +410,7 @@ export default function ItemForm() {
                     label="Created By"
                     onChange={onCreatedByChange}
                     size="small"
+                    disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value="Ryan">Ryan</MenuItem>
                     <MenuItem value="Vincent">Vincent</MenuItem>
@@ -404,6 +428,7 @@ export default function ItemForm() {
                     label="Updated By"
                     onChange={onUpdatedByChange}
                     size="small"
+                    disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value="Ryan">Ryan</MenuItem>
                     <MenuItem value="Vincent">Vincent</MenuItem>
@@ -421,6 +446,7 @@ export default function ItemForm() {
                     label="Created At"
                     onChange={onCreatedAtChange}
                     size="small"
+                    disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value="Japan">Japan</MenuItem>
                     <MenuItem value="Philippines">Philippines</MenuItem>

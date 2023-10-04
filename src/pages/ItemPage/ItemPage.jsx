@@ -18,6 +18,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FloatingButtons from "../../component/FloatingButtons";
 import { deleteData, getData } from "../../services/apiService";
+import { ITEM_FORM_NEW, ITEM_FORM_EDIT, ITEM_FORM_VIEW } from "../../config";
+
 
 export default function ItemPage() {
   const [data, setData] = useState({
@@ -73,15 +75,15 @@ export default function ItemPage() {
   }, []);
 
   const onAdd = () => {
-    history("/itempage/itemform");
-  }
-
-  const onView = () => {
-    alert("View");
+    history(ITEM_FORM_NEW);
   }
 
   const onEdit = () => {
-    alert("Edit");
+    history(ITEM_FORM_EDIT);
+  }
+
+  const onView = () => {
+    history(ITEM_FORM_VIEW);
   }
 
   const onDelete = async () => {
