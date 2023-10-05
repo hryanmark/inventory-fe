@@ -12,7 +12,8 @@ import { getData, getDataById, postData } from '../../services/apiService';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   BRAND_ID_COL, CATEGORY_ID_COL, STATUS_COL, UPDATED_AT_COL, CREATED_BY_COL,
-  UPDATED_BY_COL, CREATED_AT_COL, BRAND_ENDPOINT, CATEGORY_ENDPOINT, ITEM_ENDPOINT, ROUTE_ITEM_PAGE} from '../../config';
+  UPDATED_BY_COL, CREATED_AT_COL, BRAND_ENDPOINT, CATEGORY_ENDPOINT, ITEM_ENDPOINT, ROUTE_ITEM_PAGE,
+  NEW_MODE, EDIT_MODE, VIEW_MODE} from '../../config';
 
 export default function ItemForm(props) {
   
@@ -23,7 +24,7 @@ export default function ItemForm(props) {
   const [brand_data, setBrandData] = useState([]);
   const [category, setCategory] = useState(null);
   const [category_data, setCategoryData] = useState([]);
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState('');
   const [updated_at, setUpdatedAt] = useState('');
   const [created_by, setCreatedBy] = useState('');
   const [updated_by, setUpdatedBy] = useState('');
@@ -88,9 +89,11 @@ export default function ItemForm(props) {
   }
 
   const onSubmit = async () => {
-    if (mode === "new") {
-      // postItem();
-    } else {
+    if (mode === NEW_MODE) {
+      postItem();
+    } else if (mode === EDIT_MODE) {
+      putItem();
+    } else if (mode === VIEW_MODE) {
       // alert(JSON.stringify(brand))
       const updatebrand = brand;
       setBrand(updatebrand);
@@ -115,7 +118,7 @@ export default function ItemForm(props) {
       
       setBrand(selectedBrandObject);
 
-      setFormData({ ...formData, BRAND_ID_COL: brandId });
+      setFormData({ ...formData, "brand_id": brandId });
     }
   }
 
@@ -131,7 +134,7 @@ export default function ItemForm(props) {
       const categoryId = selectedCategoryObject.id; 
 
       setCategory(selectedCategoryObject);
-      setFormData({ ...formData, CATEGORY_ID_COL: categoryId });
+      setFormData({ ...formData, "category_id": categoryId });
     }
   };
 
@@ -139,35 +142,35 @@ export default function ItemForm(props) {
     const selectedValue = event.target.value;
 
     setStatus(selectedValue);
-    setFormData({ ...formData, STATUS_COL: selectedValue });
+    setFormData({ ...formData, "status": selectedValue });
   }
 
   const onUpdatedAtChange = (event) => {
     const selectedValue = event.target.value;
     
     setUpdatedAt(event.target.value);
-    setFormData({ ...formData, UPDATED_AT_COL: selectedValue });
+    setFormData({ ...formData, "updated_at": selectedValue });
   }
 
   const onCreatedByChange = (event) => {
     const selectedValue = event.target.value;
 
     setCreatedBy(event.target.value);
-    setFormData({ ...formData, CREATED_BY_COL: selectedValue });
+    setFormData({ ...formData, "created_by": selectedValue });
   }
 
   const onUpdatedByChange = (event) => {
     const selectedValue = event.target.value;
 
     setUpdatedBy(event.target.value);
-    setFormData({ ...formData, UPDATED_BY_COL: selectedValue });
+    setFormData({ ...formData, "updated_by": selectedValue });
   }
 
   const onCreatedAtChange = (event) => {
     const selectedValue = event.target.value;
 
     setCreatedAt(event.target.value);
-    setFormData({ ...formData, CREATED_AT_COL: selectedValue });
+    setFormData({ ...formData, "created_at": selectedValue });
   }
 
   const fetchBrand = async () => {
@@ -231,19 +234,35 @@ export default function ItemForm(props) {
     }
   }
 
+  const putItem = async () => {
+    try {
+      const result = await postData(ITEM_ENDPOINT, formData);
+
+      alert("put created : " + result);
+      history(ROUTE_ITEM_PAGE);
+
+    } catch (error) {
+      // Handle error, e.g., display an error message to the user
+      console.error(error);
+    } finally {
+    }
+  }
+
   useEffect(() => {
 
     setMode(props.mode);
 
-    if (mode === "new") {
-      console.log("form new");
-    } else if (mode === "view") {
+    if (mode === NEW_MODE) {
+      console.log("form is new mode");
+
+    } else if (mode === VIEW_MODE) {
       console.log("form is view mode");
       setFormData(loadData());
-      
-      console.log("new brand : " + brand);
-    } else if (mode === "edit") {
+
+    } else if (mode === EDIT_MODE) {
       console.log("form is edit mode");
+      setFormData(loadData());
+      
     }
 
     fetchBrand();

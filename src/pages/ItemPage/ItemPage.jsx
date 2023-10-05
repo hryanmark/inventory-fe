@@ -81,6 +81,7 @@ export default function ItemPage() {
   }
 
   const onEdit = () => {
+    localStorage.setItem('itemData', JSON.stringify(selectedRows));
     history(ITEM_FORM_EDIT);
   }
 
