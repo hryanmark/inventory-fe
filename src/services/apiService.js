@@ -13,6 +13,15 @@ export const getData = async (endpoint) => {
   }
 };
 
+export const getDataById = async (endpoint) => { 
+  try {
+    const response = await apiService.get(endpoint);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const postData = async (endpoint, data) => {
   try {
     const response = await apiService.post(endpoint, data);

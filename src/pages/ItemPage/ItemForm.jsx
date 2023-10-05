@@ -8,19 +8,22 @@ import SideNavigationBar from '../../component/SideNavigationBar';
 import BreadCrumbs from '../../component/BreadCrumbs';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getData, postData } from '../../services/apiService';
+import { getData, getDataById, postData } from '../../services/apiService';
 import { v4 as uuidv4 } from 'uuid';
+import { 
+  BRAND_ID_COL, CATEGORY_ID_COL, STATUS_COL, UPDATED_AT_COL, CREATED_BY_COL,
+  UPDATED_BY_COL, CREATED_AT_COL, BRAND_ENDPOINT, CATEGORY_ENDPOINT, ITEM_ENDPOINT, ROUTE_ITEM_PAGE} from '../../config';
 
 export default function ItemForm(props) {
   
   const history = useNavigate();
   const [mode, setMode] = useState('');
 
-  const [brand, setBrand] = useState('');
+  const [brand, setBrand] = useState(null);
   const [brand_data, setBrandData] = useState([]);
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(null);
   const [category_data, setCategoryData] = useState([]);
-  const [status, setStatus] = useState(0);
+  const [status, setStatus] = useState();
   const [updated_at, setUpdatedAt] = useState('');
   const [created_by, setCreatedBy] = useState('');
   const [updated_by, setUpdatedBy] = useState('');
@@ -45,13 +48,54 @@ export default function ItemForm(props) {
     created_at: "",
     updated_at: "",
   });
+  
+  const loadData = () => {
+    const itemData = JSON.parse(localStorage.getItem('itemData'));
+    
+      for (const item of itemData){
+        fetchBrandById(item.brand_id);
+        fetchCategoryById(item.category_id);
+        // setBrand("code2");
+
+        const existingData = {
+          id: item.id, //auto generated
+          brand_id: item.brand_id,
+          category_id: item.category_id,
+          title: item.title, //item name
+          description: item.description,
+          sku: item.sku,
+          base_uom: item.base_uom,
+          sales_uom: item.sales_uom,
+          purchase_uom: item.purchase_uom,
+          unit_cost: item.unit_cost,
+          minimum_stock_level: item.minimum_stock_level,
+          maximum_stock_level: item.maximum_stock_level,
+          status: item.status,
+          created_by: item.created_by,
+          updated_by: item.updated_by,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+          
+        }
+        localStorage.removeItem('itemData');
+        
+        return existingData;
+      }
+  }
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
   const onSubmit = async () => {
-    postItem();
+    if (mode === "new") {
+      // postItem();
+    } else {
+      // alert(JSON.stringify(brand))
+      const updatebrand = brand;
+      setBrand(updatebrand);
+      setFormData({ ...formData, BRAND_ID_COL: 2 });
+    }
   }
 
   const onCancel = () => { 
@@ -60,27 +104,34 @@ export default function ItemForm(props) {
 
   const onBrandChange = (event) => {
     const selectedValue = event.target.value;
-    const brandId = selectedValue.id;
 
-    setBrand(event.target.value);
-    setFormData({ ...formData, "brand_id": brandId });
-
-    if(selectedValue === "#new"){
+    if (selectedValue === "#new") {
       setBrand("");
       alert("Open dialog popup");
+    } else {
+      
+      const selectedBrandObject = brand_data.find((brand) => brand.code === selectedValue);
+      const brandId = selectedBrandObject.id;
+      
+      setBrand(selectedBrandObject);
+
+      setFormData({ ...formData, BRAND_ID_COL: brandId });
     }
   }
 
   const onCategoryChange = (event) => {
     const selectedValue = event.target.value;
-    const categoryId = selectedValue.id; 
 
-    setCategory(selectedValue);
-    setFormData({ ...formData, "category_id": categoryId });
-
-    if(selectedValue === "#new"){
+    if (selectedValue === "#new") {
       setCategory("");
       alert("Open Dialog Popup")
+    } else {
+
+      const selectedCategoryObject = category_data.find((category) => category.code === selectedValue);
+      const categoryId = selectedCategoryObject.id; 
+
+      setCategory(selectedCategoryObject);
+      setFormData({ ...formData, CATEGORY_ID_COL: categoryId });
     }
   };
 
@@ -88,40 +139,40 @@ export default function ItemForm(props) {
     const selectedValue = event.target.value;
 
     setStatus(selectedValue);
-    setFormData({ ...formData, "status": selectedValue });
+    setFormData({ ...formData, STATUS_COL: selectedValue });
   }
 
   const onUpdatedAtChange = (event) => {
     const selectedValue = event.target.value;
     
     setUpdatedAt(event.target.value);
-    setFormData({ ...formData, "updated_at": selectedValue });
+    setFormData({ ...formData, UPDATED_AT_COL: selectedValue });
   }
 
   const onCreatedByChange = (event) => {
     const selectedValue = event.target.value;
 
     setCreatedBy(event.target.value);
-    setFormData({ ...formData, "created_by": selectedValue });
+    setFormData({ ...formData, CREATED_BY_COL: selectedValue });
   }
 
   const onUpdatedByChange = (event) => {
     const selectedValue = event.target.value;
 
     setUpdatedBy(event.target.value);
-    setFormData({ ...formData, "updated_by": selectedValue });
+    setFormData({ ...formData, UPDATED_BY_COL: selectedValue });
   }
 
   const onCreatedAtChange = (event) => {
     const selectedValue = event.target.value;
 
     setCreatedAt(event.target.value);
-    setFormData({ ...formData, "created_at": selectedValue });
+    setFormData({ ...formData, CREATED_AT_COL: selectedValue });
   }
 
   const fetchBrand = async () => {
     try {
-      const result = await getData('/brand');
+      const result = await getData(BRAND_ENDPOINT);
 
       setBrandData(result);
 
@@ -130,9 +181,22 @@ export default function ItemForm(props) {
     }
   }
 
+  const fetchBrandById = async (id) => {
+    try {
+      const result = await getDataById(`${BRAND_ENDPOINT}/${id}`);
+
+      setBrand(result.data);
+      console.log(JSON.stringify(result.data));
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
   const fetchCategory = async () => {
     try {
-      const result = await getData('/category');
+      const result = await getData(CATEGORY_ENDPOINT);
       
       setCategoryData(result);
 
@@ -141,12 +205,24 @@ export default function ItemForm(props) {
     }
   }
 
+  const fetchCategoryById = async (id) => {
+    try {
+      const result = await getDataById(`${CATEGORY_ENDPOINT}/${id}`);
+
+      setCategory(result.data);
+      console.log(JSON.stringify(result.data));
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const postItem = async () => {
     try {
-      const result = await postData('/item', formData);
+      const result = await postData(ITEM_ENDPOINT, formData);
 
       alert("post created : " + result);
-      history('/itempage');
+      history(ROUTE_ITEM_PAGE);
 
     } catch (error) {
       // Handle error, e.g., display an error message to the user
@@ -160,11 +236,14 @@ export default function ItemForm(props) {
     setMode(props.mode);
 
     if (mode === "new") {
-      alert("form new");
+      console.log("form new");
     } else if (mode === "view") {
-      alert("form is view mode");
+      console.log("form is view mode");
+      setFormData(loadData());
+      
+      console.log("new brand : " + brand);
     } else if (mode === "edit") {
-      alert("form is edit mode");
+      console.log("form is edit mode");
     }
 
     fetchBrand();
@@ -254,17 +333,17 @@ export default function ItemForm(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={brand} //object
+                    value={brand ? brand.code : ''} //object
                     label="Brand"
                     onChange={onBrandChange}
                     size="small"
                     disabled = {mode === "view" ? true : false}
                   >
                     <MenuItem value="#new">Create New</MenuItem>
-                    {brand_data.map((brand, index) => (
-                      <MenuItem 
-                      key={index} 
-                      value={brand}>{brand.code}</MenuItem>
+                    {brand_data.map((brand) => (
+                    <MenuItem 
+                      key={brand.id} 
+                      value={brand.code}>{brand.code}</MenuItem>
                     ))}
 
                   </Select>
@@ -276,7 +355,7 @@ export default function ItemForm(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={category}
+                    value={category ? category.code : ''}
                     label="Category"
                     onChange={onCategoryChange}
                     size="small"
@@ -284,7 +363,9 @@ export default function ItemForm(props) {
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {category_data.map((category, index) => (
-                      <MenuItem key={index} value={category}>{category.description}</MenuItem>
+                      <MenuItem 
+                      key={index} 
+                      value={category.code}>{category.code}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>

@@ -45,8 +45,10 @@ export default function ItemPage() {
   const history = useNavigate();
   const [selectedRows, setSelectedRows] = useState([]);
 
-  const handleSelectionModelChange = (selectionModel) => {
-    setSelectedRows(selectionModel);
+  const handleSelectionModelChange = (ids) => {
+    const selectedRowsData = ids.map((id) => data.find((row) => row.id === id));
+    
+    setSelectedRows(selectedRowsData);
   }
 
   const fetchData = async () => {
@@ -83,6 +85,7 @@ export default function ItemPage() {
   }
 
   const onView = () => {
+    localStorage.setItem('itemData', JSON.stringify(selectedRows));
     history(ITEM_FORM_VIEW);
   }
 
@@ -90,14 +93,16 @@ export default function ItemPage() {
     try {
       if (selectedRows.length > 0) {
 
-        const result = await deleteData(`/item/${selectedRows}`);
+        const deletedItem = selectedRows[0].title;
+        const result = await deleteData(`/item/${selectedRows[0].id}`);
+
         console.log("Deleted result: " + JSON.stringify(result));
 
-        const updatedData = data.filter(
-          (post) => !selectedRows.includes(post.id)
-        );
+        const updatedData = data.filter((item) => item.id !== selectedRows[0].id);
 
+        alert(deletedItem + " is deleted.");
         setData(updatedData);
+        
       } else {
         alert("Select a row to delete.");
       }
@@ -195,8 +200,10 @@ export default function ItemPage() {
               }}
               pageSizeOptions={[5, 10]}
               checkboxSelection
-              rowSelection={selectedRows}
-              onRowSelectionModelChange={handleSelectionModelChange}
+              onRowSelectionModelChange={(ids) => {
+                handleSelectionModelChange(ids);
+              }} 
+              
             />
           </div>
         </Card>
