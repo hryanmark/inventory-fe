@@ -19,6 +19,7 @@ export default function ItemForm(props) {
   
   const history = useNavigate();
   const [mode, setMode] = useState('');
+  const formName = "Item Form"
 
   const [brand, setBrand] = useState(null);
   const [brand_data, setBrandData] = useState([]);
@@ -304,7 +305,7 @@ export default function ItemForm(props) {
             }}
           >
             <div>
-              <InputLabel sx={{m: 2, width: '35ch'}}>Item Form</InputLabel>
+              <InputLabel sx={{m: 2, width: '35ch'}}>{formName}</InputLabel>
             </div>
 
             <Divider></Divider>

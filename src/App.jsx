@@ -11,6 +11,7 @@ import UnitOfMeasurePage from './pages/UnitOfMeasurePage/UnitOfMeasurePage';
 import LocationPage from './pages/LocationPage/LocationPage';
 import ItemBarcodePage from './pages/ItemBarcodePage/ItemBarcodePage';
 import UserPage from './pages/UserPage/UserPage';
+import ItemUnitOfMeasureForm from './pages/ItemUnitOfMeasurePage/ItemUnitOfMeasureForm';
 
 function App() {
   return (
@@ -23,6 +24,9 @@ function App() {
           <Route path="/item/form/view" element={<ItemForm mode={"view"}/>}/>
           <Route path="/item/form/edit" element={<ItemForm mode={"edit"}/>}/>
           <Route path="/itemunitofmeasure" element={<ItemUnitOfMeasurePage />}/>
+          <Route path="/itemunitofmeasure/form/new" element={<ItemUnitOfMeasureForm mode={"new"} />}/>
+          <Route path="/itemunitofmeasure/form/edit" element={<ItemUnitOfMeasureForm mode={"edit"} />}/>
+          <Route path="/itemunitofmeasure/form/view" element={<ItemUnitOfMeasureForm mode={"view"} />}/>
           <Route path="/brand" element={<BrandPage />}/>
           <Route path="/category" element={<CategoryPage />}/>
           <Route path="/unitofmeasure" element={<UnitOfMeasurePage />}/>
