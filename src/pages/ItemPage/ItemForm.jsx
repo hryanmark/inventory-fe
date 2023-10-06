@@ -102,7 +102,7 @@ export default function ItemForm(props) {
   }
 
   const onCancel = () => { 
-    history('/itempage');
+    history(ROUTE_ITEM_PAGE);
   }
 
   const onBrandChange = (event) => {

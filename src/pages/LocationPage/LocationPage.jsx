@@ -18,29 +18,21 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FloatingButtons from "../../component/FloatingButtons";
 import { deleteData, getData } from "../../services/apiService";
-import { ITEM_FORM_NEW, ITEM_FORM_EDIT, ITEM_FORM_VIEW } from "../../config";
+import {
+  LOCATION_FORM_NEW,
+  LOCATION_FORM_EDIT,
+  LOCATION_FORM_VIEW,
+} from "../../config";
 
-export default function ItemPage() {
-  const pageName = "Item List";
+export default function LocationPage() {
+  const pageName = "Location List";
   const [data, setData] = useState({
     id: "",
-    brand_id: "",
-    category_id: "",
-    title: "",
+    code: "",
     description: "",
-    SKU: "",
-    base_uom: "",
-    sales_uom: "",
-    purchase_uom: "",
-    unit_cost: "",
-    minimum_stock_level: "",
-    maximum_stock_level: "",
-    status: "",
-    created_by: "",
-    updated_by: "",
-    created_at: "",
-    updated_at: "",
+    address: "",
   });
+
   const [columns, setColumns] = useState([]);
   const history = useNavigate();
   const [selectedRows, setSelectedRows] = useState([]);
@@ -53,7 +45,7 @@ export default function ItemPage() {
 
   const fetchData = async () => {
     try {
-      const result = await getData("/item");
+      const result = await getData("/location");
 
       setData(result);
 
@@ -77,28 +69,28 @@ export default function ItemPage() {
   }, []);
 
   const onAdd = () => {
-    history(ITEM_FORM_NEW);
+    history(LOCATION_FORM_NEW);
   };
 
   const onEdit = () => {
-    localStorage.setItem("itemData", JSON.stringify(selectedRows));
-    history(ITEM_FORM_EDIT);
+    localStorage.setItem("locationData", JSON.stringify(selectedRows));
+    history(LOCATION_FORM_EDIT);
   };
 
   const onView = () => {
-    localStorage.setItem("itemData", JSON.stringify(selectedRows));
-    history(ITEM_FORM_VIEW);
+    localStorage.setItem("locationData", JSON.stringify(selectedRows));
+    history(LOCATION_FORM_VIEW);
   };
 
   const onDelete = async () => {
     try {
       if (selectedRows.length > 0) {
-        const result = await deleteData(`/item/${selectedRows[0].id}`);
+        const result = await deleteData(`/location/${selectedRows[0].id}`);
 
         console.log("Deleted result: " + JSON.stringify(result));
 
         const updatedData = data.filter(
-          (item) => item.id !== selectedRows[0].id
+          (location) => location.id !== selectedRows[0].id
         );
 
         setData(updatedData);

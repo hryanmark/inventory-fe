@@ -18,29 +18,21 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FloatingButtons from "../../component/FloatingButtons";
 import { deleteData, getData } from "../../services/apiService";
-import { ITEM_FORM_NEW, ITEM_FORM_EDIT, ITEM_FORM_VIEW } from "../../config";
+import { USER_FORM_NEW, USER_FORM_EDIT, USER_FORM_VIEW } from "../../config";
 
-export default function ItemPage() {
-  const pageName = "Item List";
+export default function UserPage() {
+  const pageName = "User List";
   const [data, setData] = useState({
     id: "",
-    brand_id: "",
-    category_id: "",
-    title: "",
-    description: "",
-    SKU: "",
-    base_uom: "",
-    sales_uom: "",
-    purchase_uom: "",
-    unit_cost: "",
-    minimum_stock_level: "",
-    maximum_stock_level: "",
+    username: "",
+    password: "",
+    name: "",
+    contact_no: "",
+    email: "",
     status: "",
-    created_by: "",
-    updated_by: "",
-    created_at: "",
-    updated_at: "",
+    role: "",
   });
+
   const [columns, setColumns] = useState([]);
   const history = useNavigate();
   const [selectedRows, setSelectedRows] = useState([]);
@@ -53,7 +45,7 @@ export default function ItemPage() {
 
   const fetchData = async () => {
     try {
-      const result = await getData("/item");
+      const result = await getData("/user");
 
       setData(result);
 
@@ -77,28 +69,28 @@ export default function ItemPage() {
   }, []);
 
   const onAdd = () => {
-    history(ITEM_FORM_NEW);
+    history(USER_FORM_NEW);
   };
 
   const onEdit = () => {
-    localStorage.setItem("itemData", JSON.stringify(selectedRows));
-    history(ITEM_FORM_EDIT);
+    localStorage.setItem("userData", JSON.stringify(selectedRows));
+    history(USER_FORM_EDIT);
   };
 
   const onView = () => {
-    localStorage.setItem("itemData", JSON.stringify(selectedRows));
-    history(ITEM_FORM_VIEW);
+    localStorage.setItem("userData", JSON.stringify(selectedRows));
+    history(USER_FORM_VIEW);
   };
 
   const onDelete = async () => {
     try {
       if (selectedRows.length > 0) {
-        const result = await deleteData(`/item/${selectedRows[0].id}`);
+        const result = await deleteData(`/user/${selectedRows[0].id}`);
 
         console.log("Deleted result: " + JSON.stringify(result));
 
         const updatedData = data.filter(
-          (item) => item.id !== selectedRows[0].id
+          (user) => user.id !== selectedRows[0].id
         );
 
         setData(updatedData);

@@ -15,42 +15,87 @@ import SideNavigationBar from "../../component/SideNavigationBar";
 import Header from "../../component/Header";
 import BreadCrumbs from "../../component/BreadCrumbs";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import FloatingButtons from "../../component/FloatingButtons";
-import { getData } from "../../services/apiService";
+import { deleteData, getData } from "../../services/apiService";
+import { BRAND_FORM_NEW, BRAND_FORM_EDIT, BRAND_FORM_VIEW } from "../../config";
 
 export default function BrandPage() {
+  const pageName = "Brand List";
+  const [data, setData] = useState({
+    id: "",
+    code: "",
+    description: "",
+  });
 
-  const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
+  const history = useNavigate();
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleSelectionModelChange = (ids) => {
+    const selectedRowsData = ids.map((id) => data.find((row) => row.id === id));
+
+    setSelectedRows(selectedRowsData);
+  };
+
+  const fetchData = async () => {
+    try {
+      const result = await getData("/brand");
+
+      setData(result);
+
+      if (result.length > 0) {
+        const keys = Object.keys(result[0]);
+        const generatedColumns = keys.map((key) => ({
+          field: key,
+          headerName: key.toUpperCase(),
+          width: 150,
+        }));
+
+        setColumns(generatedColumns);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-
-    async function fetchData(){
-      try {
-        const result = await getData('/brand');
-        
-        setData(result);
-
-        if (result.length > 0){
-          const keys = Object.keys(result[0]);
-          const generatedColumns = keys.map((key) => ({
-            field: key,
-            headerName: key.toUpperCase(),
-            width: 150,
-          }));
-
-          setColumns(generatedColumns);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
     fetchData();
   }, []);
-  
-  const onAdd =() => {
-  }
+
+  const onAdd = () => {
+    history(BRAND_FORM_NEW);
+  };
+
+  const onEdit = () => {
+    localStorage.setItem("brandData", JSON.stringify(selectedRows));
+    history(BRAND_FORM_EDIT);
+  };
+
+  const onView = () => {
+    localStorage.setItem("brandData", JSON.stringify(selectedRows));
+    history(BRAND_FORM_VIEW);
+  };
+
+  const onDelete = async () => {
+    try {
+      if (selectedRows.length > 0) {
+        const result = await deleteData(`/brand/${selectedRows[0].id}`);
+
+        console.log("Deleted result: " + JSON.stringify(result));
+
+        const updatedData = data.filter(
+          (brand) => brand.id !== selectedRows[0].id
+        );
+
+        setData(updatedData);
+      } else {
+        alert("Select a row to delete.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -67,7 +112,7 @@ export default function BrandPage() {
         <Toolbar />
 
         <BreadCrumbs />
-        
+
         <Card sx={{ marginTop: "2%" }}>
           <div>
             <Accordion defaultExpanded="false">
@@ -77,7 +122,7 @@ export default function BrandPage() {
                 id="panel1a-header"
                 defaultExpanded="false"
               >
-                <Typography>Brand</Typography>
+                <Typography>{pageName}</Typography>
               </AccordionSummary>
 
               <Divider />
@@ -141,10 +186,13 @@ export default function BrandPage() {
               }}
               pageSizeOptions={[5, 10]}
               checkboxSelection
+              onRowSelectionModelChange={(ids) => {
+                handleSelectionModelChange(ids);
+              }}
             />
           </div>
         </Card>
-        <FloatingButtons />
+        <FloatingButtons view={onView} edit={onEdit} delete={onDelete} />
       </Box>
     </Box>
   );
