@@ -12,6 +12,7 @@ import LocationPage from './pages/LocationPage/LocationPage';
 import ItemBarcodePage from './pages/ItemBarcodePage/ItemBarcodePage';
 import UserPage from './pages/UserPage/UserPage';
 import ItemUnitOfMeasureForm from './pages/ItemUnitOfMeasurePage/ItemUnitOfMeasureForm';
+import BrandForm from './pages/BrandPage/BrandForm';
 
 function App() {
   return (
@@ -28,6 +29,9 @@ function App() {
           <Route path="/itemunitofmeasure/form/edit" element={<ItemUnitOfMeasureForm mode={"edit"} />}/>
           <Route path="/itemunitofmeasure/form/view" element={<ItemUnitOfMeasureForm mode={"view"} />}/>
           <Route path="/brand" element={<BrandPage />}/>
+          <Route path="/brand/form/new" element={<BrandForm mode={"new"} />}/>
+          <Route path="/brand/form/edit" element={<BrandForm mode={"edit"} />}/>
+          <Route path="/brand/form/view" element={<BrandForm mode={"view"} />}/>
           <Route path="/category" element={<CategoryPage />}/>
           <Route path="/unitofmeasure" element={<UnitOfMeasurePage />}/>
           <Route path="/location" element={<LocationPage />}/>

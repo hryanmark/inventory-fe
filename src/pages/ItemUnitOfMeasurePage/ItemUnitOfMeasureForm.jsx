@@ -233,7 +233,7 @@ export default function ItemUnitOfMeasureForm(props) {
             <Divider></Divider>
 
             <div style={{ display: "flex" }}>
-              <Box sx={{ mt: 2, mr: 1, mb: "30%", ml: 3, width: "15%" }}>
+              <Box sx={{ mt: 3, mr: 1, mb: "30%", ml: 3, width: "15%" }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Item ID
@@ -256,7 +256,7 @@ export default function ItemUnitOfMeasureForm(props) {
                   </Select>
                 </FormControl>
               </Box>
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "15%" }}>
+              <Box sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "15%" }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Unit Of Measure ID
@@ -283,7 +283,7 @@ export default function ItemUnitOfMeasureForm(props) {
                 label="Quantity"
                 id="outlined-basic"
                 type="number"
-                sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "25%" }}
+                sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "25%" }}
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
