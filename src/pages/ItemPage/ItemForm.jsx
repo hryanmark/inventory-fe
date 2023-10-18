@@ -37,7 +37,7 @@ export default function ItemForm(props) {
   const [mode, setMode] = useState("");
   const formName = "Item Form";
   const [openBrandDialog, setOpenBrandDialog] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
 
   const [brand, setBrand] = useState(null);
   const [category, setCategory] = useState(null);
@@ -151,7 +151,7 @@ export default function ItemForm(props) {
   };
 
   const onCategoryDialogClose = () => {
-    setOpenDialog(false);
+    setOpenCategoryDialog(false);
   };
 
   const handleBrandDialogData = (data) => {
@@ -168,7 +168,7 @@ export default function ItemForm(props) {
     const selectedValue = event.target.value;
 
     if (selectedValue === "#new") {
-      setOpenDialog(true);
+      setOpenCategoryDialog(true);
     } else {
       const selectedCategoryObject = category_data.find(
         (category) => category.code === selectedValue
@@ -570,7 +570,7 @@ export default function ItemForm(props) {
               </Box>
 
               <FormDialog
-                open={openDialog}
+                open={openCategoryDialog}
                 name="Category Form"
                 handleClose={onCategoryDialogClose}
               >
