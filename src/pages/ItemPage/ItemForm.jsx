@@ -20,13 +20,6 @@ import { useState, useEffect } from "react";
 import { getData, getDataById, postData } from "../../services/apiService";
 import { v4 as uuidv4 } from "uuid";
 import {
-  BRAND_ID_COL,
-  CATEGORY_ID_COL,
-  STATUS_COL,
-  UPDATED_AT_COL,
-  CREATED_BY_COL,
-  UPDATED_BY_COL,
-  CREATED_AT_COL,
   BRAND_ENDPOINT,
   CATEGORY_ENDPOINT,
   ITEM_ENDPOINT,
@@ -35,11 +28,14 @@ import {
   EDIT_MODE,
   VIEW_MODE,
 } from "../../config";
+import FormDialog from "../../component/FormDialog";
+import BrandFormDialog from "./DialogForm/BrandFormDialog";
 
 export default function ItemForm(props) {
   const history = useNavigate();
   const [mode, setMode] = useState("");
   const formName = "Item Form";
+  const [openBrand, setOpenBrand] = useState(false);
 
   const [brand, setBrand] = useState(null);
   const [category, setCategory] = useState(null);
@@ -135,7 +131,7 @@ export default function ItemForm(props) {
     const selectedValue = event.target.value;
 
     if (selectedValue === "#new") {
-      setBrand("");
+      setOpenBrand(true);
     } else {
       const selectedBrandObject = brand_data.find(
         (brand) => brand.code === selectedValue
@@ -146,6 +142,15 @@ export default function ItemForm(props) {
 
       setFormData({ ...formData, brand_id: brandId });
     }
+  };
+
+  const onBrandClose = () => {
+    setOpenBrand(false);
+  };
+
+  const handleBrandData = (data) => {
+    setBrandData((prevData) => [...prevData, data]);
+    setBrand(data);
   };
 
   const onCategoryChange = (event) => {
@@ -285,7 +290,7 @@ export default function ItemForm(props) {
   const fetchLocation = async () => {
     try {
       const result = await getData("/location");
-      
+
       setLocationData(result);
     } catch (error) {
       console.error(error);
@@ -295,7 +300,7 @@ export default function ItemForm(props) {
   const fetchLocationUpatedAtId = async (id) => {
     try {
       const result = await getData(`/location/${id}`);
-      
+
       setUpdatedAt(result);
     } catch (error) {
       console.error(error);
@@ -305,7 +310,7 @@ export default function ItemForm(props) {
   const fetchUserCreatedByById = async (id) => {
     try {
       const result = await getData(`/user/${id}`);
-      
+
       setCreatedBy(result);
     } catch (error) {
       console.error(error);
@@ -315,7 +320,7 @@ export default function ItemForm(props) {
   const fetchUserUpdatedByById = async (id) => {
     try {
       const result = await getData(`/user/${id}`);
-      
+
       setUpdatedBy(result);
     } catch (error) {
       console.error(error);
@@ -325,18 +330,17 @@ export default function ItemForm(props) {
   const fetchLocationCreatedAtById = async (id) => {
     try {
       const result = await getData(`/location/${id}`);
-      
+
       setCreatedAt(result);
     } catch (error) {
       console.error(error);
     }
   };
 
-
   const fetchUsers = async () => {
     try {
       const result = await getData("/user");
-      
+
       setUserData(result);
     } catch (error) {
       console.error(error);
@@ -346,7 +350,7 @@ export default function ItemForm(props) {
   const fetchUserById = async (id) => {
     try {
       const result = await getData(`/user/${id}`);
-      
+
       setUserData(result);
     } catch (error) {
       console.error(error);
@@ -400,6 +404,16 @@ export default function ItemForm(props) {
     // to save memory.
     fetchUsers();
   }, [mode]);
+
+  useEffect(() => {
+    //update brand_data after adding new 'brand'
+    if (brand) {
+      const brandObject = brand_data.find((brnd) => brnd.code === brand.code);
+      if (brandObject) {
+        setFormData({ ...formData, brand_id: brandObject.id });
+      }
+    }
+  }, [brand_data, brand]);
 
   return (
     <div>
@@ -499,6 +513,18 @@ export default function ItemForm(props) {
                   </Select>
                 </FormControl>
               </Box>
+
+              <FormDialog
+                open={openBrand}
+                name="Brand Form"
+                handleClose={onBrandClose}
+              >
+                <BrandFormDialog
+                  handleBrandData={handleBrandData}
+                  handleClose={onBrandClose}
+                />
+              </FormDialog>
+
               <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "15%" }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
@@ -656,9 +682,9 @@ export default function ItemForm(props) {
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {userData.map((user) => (
-                      <MenuItem 
-                      key={user.id}
-                      value={user.name}>{user.name}</MenuItem>
+                      <MenuItem key={user.id} value={user.name}>
+                        {user.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -679,9 +705,9 @@ export default function ItemForm(props) {
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {userData.map((user) => (
-                      <MenuItem 
-                      key={user.id}
-                      value={user.name}>{user.name}</MenuItem>
+                      <MenuItem key={user.id} value={user.name}>
+                        {user.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -694,7 +720,7 @@ export default function ItemForm(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={created_at ? created_at.code: ""}
+                    value={created_at ? created_at.code : ""}
                     label="Created At"
                     onChange={onCreatedAtChange}
                     size="small"
@@ -702,9 +728,9 @@ export default function ItemForm(props) {
                   >
                     <MenuItem value="#new">Create New</MenuItem>
                     {locationData.map((location) => (
-                      <MenuItem 
-                      key={location.id}
-                      value={location.code}>{location.code}</MenuItem>
+                      <MenuItem key={location.id} value={location.code}>
+                        {location.code}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
