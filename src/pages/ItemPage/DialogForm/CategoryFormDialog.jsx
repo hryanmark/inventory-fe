@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import { postData } from "../../../services/apiService";
 
-export default function BrandFormDialog({ handleData, handleClose }) {
+export default function CategoryFormDialog({ handleData, handleClose }) {
 
   const [formData, setFormData] = useState({
     id: uuidv4, //auto generated
@@ -30,7 +30,7 @@ export default function BrandFormDialog({ handleData, handleClose }) {
 
   const postItem = async () => {
     try {
-      const result = await postData("/brand", formData);
+      const result = await postData("/category", formData);
 
       handleData(result);
       handleClose();

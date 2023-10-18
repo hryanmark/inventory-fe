@@ -30,12 +30,14 @@ import {
 } from "../../config";
 import FormDialog from "../../component/FormDialog";
 import BrandFormDialog from "./DialogForm/BrandFormDialog";
+import CategoryFormDialog from "./DialogForm/CategoryFormDialog";
 
 export default function ItemForm(props) {
   const history = useNavigate();
   const [mode, setMode] = useState("");
   const formName = "Item Form";
-  const [openBrand, setOpenBrand] = useState(false);
+  const [openBrandDialog, setOpenBrandDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const [brand, setBrand] = useState(null);
   const [category, setCategory] = useState(null);
@@ -131,7 +133,7 @@ export default function ItemForm(props) {
     const selectedValue = event.target.value;
 
     if (selectedValue === "#new") {
-      setOpenBrand(true);
+      setOpenBrandDialog(true);
     } else {
       const selectedBrandObject = brand_data.find(
         (brand) => brand.code === selectedValue
@@ -144,21 +146,29 @@ export default function ItemForm(props) {
     }
   };
 
-  const onBrandClose = () => {
-    setOpenBrand(false);
+  const onBrandDialogClose = () => {
+    setOpenBrandDialog(false);
   };
 
-  const handleBrandData = (data) => {
+  const onCategoryDialogClose = () => {
+    setOpenDialog(false);
+  };
+
+  const handleBrandDialogData = (data) => {
     setBrandData((prevData) => [...prevData, data]);
     setBrand(data);
+  };
+
+  const handleCategoryDialogData = (data) => {
+    setCategoryData((prevData) => [...prevData, data]);
+    setCategory(data);
   };
 
   const onCategoryChange = (event) => {
     const selectedValue = event.target.value;
 
     if (selectedValue === "#new") {
-      setCategory("");
-      alert("Open Dialog Popup");
+      setOpenDialog(true);
     } else {
       const selectedCategoryObject = category_data.find(
         (category) => category.code === selectedValue
@@ -415,6 +425,16 @@ export default function ItemForm(props) {
     }
   }, [brand_data, brand]);
 
+  useEffect(() => {
+    //update category_data after adding new 'category'
+    if (category) {
+      const categoryObject = category_data.find((ctgry) => ctgry.code === category.code);
+      if (categoryObject) {
+        setFormData({ ...formData, category_id: categoryObject.id });
+      }
+    }
+  }, [category_data, category]);
+
   return (
     <div>
       <Box sx={{ display: "flex" }}>
@@ -515,13 +535,13 @@ export default function ItemForm(props) {
               </Box>
 
               <FormDialog
-                open={openBrand}
+                open={openBrandDialog}
                 name="Brand Form"
-                handleClose={onBrandClose}
+                handleClose={onBrandDialogClose}
               >
                 <BrandFormDialog
-                  handleBrandData={handleBrandData}
-                  handleClose={onBrandClose}
+                  handleData={handleBrandDialogData}
+                  handleClose={onBrandDialogClose}
                 />
               </FormDialog>
 
@@ -548,6 +568,18 @@ export default function ItemForm(props) {
                   </Select>
                 </FormControl>
               </Box>
+
+              <FormDialog
+                open={openDialog}
+                name="Category Form"
+                handleClose={onCategoryDialogClose}
+              >
+                <CategoryFormDialog
+                  handleData={handleCategoryDialogData}
+                  handleClose={onCategoryDialogClose}
+                />
+              </FormDialog>
+
               <TextField
                 label="Base Unit Of Measure"
                 id="outlined-basic"
