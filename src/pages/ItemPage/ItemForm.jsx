@@ -31,6 +31,7 @@ import {
 import FormDialog from "../../component/FormDialog";
 import BrandFormDialog from "./DialogForm/BrandFormDialog";
 import CategoryFormDialog from "./DialogForm/CategoryFormDialog";
+import UpdatedAtFormDialog from "./DialogForm/UpdatedAtFormDialog";
 
 export default function ItemForm(props) {
   const history = useNavigate();
@@ -38,6 +39,7 @@ export default function ItemForm(props) {
   const formName = "Item Form";
   const [openBrandDialog, setOpenBrandDialog] = useState(false);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
+  const [openUpdatedAtDialog, setOpenUpdatedAtDialog] = useState(false);
 
   const [brand, setBrand] = useState(null);
   const [category, setCategory] = useState(null);
@@ -154,6 +156,10 @@ export default function ItemForm(props) {
     setOpenCategoryDialog(false);
   };
 
+  const onUpdatedAtDialogClose = () => {
+    setOpenUpdatedAtDialog(false);
+  };
+
   const handleBrandDialogData = (data) => {
     setBrandData((prevData) => [...prevData, data]);
     setBrand(data);
@@ -162,6 +168,11 @@ export default function ItemForm(props) {
   const handleCategoryDialogData = (data) => {
     setCategoryData((prevData) => [...prevData, data]);
     setCategory(data);
+  };
+
+  const handleUpdatedAtDialogData = (data) => {
+    setLocationData((prevData) => [...prevData, data]);
+    setUpdatedAt(data);
   };
 
   const onCategoryChange = (event) => {
@@ -191,8 +202,7 @@ export default function ItemForm(props) {
     const selectedValue = event.target.value;
 
     if (selectedValue === "#new") {
-      setUpdatedAt("");
-      alert("Open Dialog Popup");
+      setOpenUpdatedAtDialog(true);
     } else {
       const selectedLocationObject = locationData.find(
         (location) => location.code === selectedValue
@@ -434,6 +444,16 @@ export default function ItemForm(props) {
       }
     }
   }, [category_data, category]);
+
+  useEffect(() => {
+    //update location_data after adding new 'location'
+    if (updated_at) {
+      const locationObject = locationData.find((location) => location.code === updated_at.code);
+      if (locationObject) {
+        setFormData({ ...formData, updated_at: locationObject.id });
+      }
+    }
+  }, [locationData, updated_at]);
 
   return (
     <div>
@@ -696,6 +716,18 @@ export default function ItemForm(props) {
                   </Select>
                 </FormControl>
               </Box>
+
+              <FormDialog
+                open={openUpdatedAtDialog}
+                name="Location Form"
+                handleClose={onUpdatedAtDialogClose}
+              >
+                <UpdatedAtFormDialog
+                  handleData={handleUpdatedAtDialogData}
+                  handleClose={onUpdatedAtDialogClose}
+                />
+              </FormDialog>
+
             </div>
             <div style={{ display: "flex" }}>
               <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: "18%" }}>
