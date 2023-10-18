@@ -55,7 +55,7 @@ export default function ItemForm(props) {
   const [userData, setUserData] = useState([]); //Used for updated_by and created_by
 
   const [formData, setFormData] = useState({
-    id: uuidv4, //auto generated
+    // id: uuidv4, //auto generated
     brand_id: "",
     category_id: "",
     title: "", //item name
@@ -687,9 +687,9 @@ export default function ItemForm(props) {
                     size="small"
                     disabled={mode === "view" ? true : false}
                   >
-                    <MenuItem value={1}>Pending</MenuItem>
-                    <MenuItem value={2}>Delivered</MenuItem>
-                    <MenuItem value={3}>Something</MenuItem>
+                    <MenuItem value={1}>Active</MenuItem>
+                    <MenuItem value={2}>Draft</MenuItem>
+                    <MenuItem value={3}>Blocked</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -744,7 +744,6 @@ export default function ItemForm(props) {
                     size="small"
                     disabled={mode === "view" ? true : false}
                   >
-                    <MenuItem value="#new">Create New</MenuItem>
                     {userData.map((user) => (
                       <MenuItem key={user.id} value={user.name}>
                         {user.name}
@@ -767,7 +766,6 @@ export default function ItemForm(props) {
                     size="small"
                     disabled={mode === "view" ? true : false}
                   >
-                    <MenuItem value="#new">Create New</MenuItem>
                     {userData.map((user) => (
                       <MenuItem key={user.id} value={user.name}>
                         {user.name}

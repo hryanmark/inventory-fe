@@ -6,7 +6,7 @@ import { postData } from "../../../services/apiService";
 export default function CategoryFormDialog({ handleData, handleClose }) {
 
   const [formData, setFormData] = useState({
-    id: uuidv4, //auto generated
+    // id: uuidv4, //auto generated
     code: "",
     description: "",
   });

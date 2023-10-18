@@ -27,7 +27,7 @@ export default function UnitOfMeasureForm(props) {
   const formName = "Unit Of Measure Form";
 
   const [formData, setFormData] = useState({
-    id: uuidv4, //auto generated
+    // id: uuidv4, //auto generated
     code: "",
     description: "",
   });

@@ -6,7 +6,7 @@ import Textarea from "@mui/joy/Textarea";
 
 export default function UpdatedAtFormDialog({ handleData, handleClose }) {
   const [formData, setFormData] = useState({
-    id: uuidv4, //auto generated
+    // id: uuidv4, //auto generated
     code: "",
     description: "",
     address: "",

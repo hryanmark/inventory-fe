@@ -32,7 +32,7 @@ export default function ItemUnitOfMeasureForm(props) {
   const [uomData, setUomData] = useState([]);
 
   const [formData, setFormData] = useState({
-    id: uuidv4, //auto generated
+    // id: uuidv4, //auto generated
     item_id: "",
     unit_of_measure_id: "",
     quantity: "",

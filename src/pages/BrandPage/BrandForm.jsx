@@ -27,7 +27,7 @@ export default function BrandForm(props) {
   const formName = "Brand Form";
 
   const [formData, setFormData] = useState({
-    id: uuidv4, //auto generated
+    // id: uuidv4, //auto generated
     code: "",
     description: "",
   });

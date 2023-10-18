@@ -27,7 +27,7 @@ export default function LocationForm(props) {
   const formName = "Location Form";
 
   const [formData, setFormData] = useState({
-    id: uuidv4, //auto generated
+    // id: uuidv4, //auto generated
     code: "",
     description: "",
     address: "",
