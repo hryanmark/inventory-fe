@@ -18,7 +18,6 @@ import BreadCrumbs from "../../component/BreadCrumbs";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getData, getDataById, postData } from "../../services/apiService";
-import { v4 as uuidv4 } from "uuid";
 import {
   BRAND_ENDPOINT,
   CATEGORY_ENDPOINT,
@@ -31,27 +30,29 @@ import {
 import FormDialog from "../../component/FormDialog";
 import BrandFormDialog from "./DialogForm/BrandFormDialog";
 import CategoryFormDialog from "./DialogForm/CategoryFormDialog";
-import UpdatedAtFormDialog from "./DialogForm/UpdatedAtFormDialog";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { DateTimeField } from "@mui/x-date-pickers/DateTimeField";
+import dayjs from "dayjs";
+import { format } from 'date-fns';
 
 export default function ItemForm(props) {
-  const history = useNavigate();
-  const [mode, setMode] = useState("");
   const formName = "Item Form";
+  const history = useNavigate();
+  const dateTimeFormat = `yyyy-MM-dd'T'HH:mm:ss`;
+  const [mode, setMode] = useState("");
   const [openBrandDialog, setOpenBrandDialog] = useState(false);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
-  const [openUpdatedAtDialog, setOpenUpdatedAtDialog] = useState(false);
 
   const [brand, setBrand] = useState(null);
   const [category, setCategory] = useState(null);
   const [status, setStatus] = useState("");
-  const [updated_at, setUpdatedAt] = useState(null);
   const [created_by, setCreatedBy] = useState(null);
   const [updated_by, setUpdatedBy] = useState(null);
-  const [created_at, setCreatedAt] = useState(null);
 
   const [brand_data, setBrandData] = useState([]);
   const [category_data, setCategoryData] = useState([]);
-  const [locationData, setLocationData] = useState([]); //Used of updated_at and created_at
   const [userData, setUserData] = useState([]); //Used for updated_by and created_by
 
   const [formData, setFormData] = useState({
@@ -70,20 +71,18 @@ export default function ItemForm(props) {
     status: "",
     created_by: "",
     updated_by: "",
-    created_at: "",
-    updated_at: "",
+    created_at: format(new Date(), dateTimeFormat),
+    updated_at: format(new Date(), dateTimeFormat),
   });
 
-  const loadData = () => {
+  const loadData = (mode) => {
     const itemData = JSON.parse(localStorage.getItem("itemData"));
 
     for (const item of itemData) {
       fetchBrandById(item.brand_id);
       fetchCategoryById(item.category_id);
-      fetchLocationUpatedAtId(item.updated_at);
       fetchUserCreatedByById(item.created_by);
       fetchUserUpdatedByById(item.updated_by);
-      fetchLocationCreatedAtById(item.created_at);
 
       const existingData = {
         id: item.id, //auto generated
@@ -102,7 +101,7 @@ export default function ItemForm(props) {
         created_by: item.created_by,
         updated_by: item.updated_by,
         created_at: item.created_at,
-        updated_at: item.updated_at,
+        updated_at: mode === 'view' ? item.updated_at : format(new Date(), dateTimeFormat),
       };
       localStorage.removeItem("itemData");
 
@@ -156,9 +155,9 @@ export default function ItemForm(props) {
     setOpenCategoryDialog(false);
   };
 
-  const onUpdatedAtDialogClose = () => {
-    setOpenUpdatedAtDialog(false);
-  };
+  // const onUpdatedAtDialogClose = () => {
+  //   setOpenUpdatedAtDialog(false);
+  // };
 
   const handleBrandDialogData = (data) => {
     setBrandData((prevData) => [...prevData, data]);
@@ -168,11 +167,6 @@ export default function ItemForm(props) {
   const handleCategoryDialogData = (data) => {
     setCategoryData((prevData) => [...prevData, data]);
     setCategory(data);
-  };
-
-  const handleUpdatedAtDialogData = (data) => {
-    setLocationData((prevData) => [...prevData, data]);
-    setUpdatedAt(data);
   };
 
   const onCategoryChange = (event) => {
@@ -196,22 +190,6 @@ export default function ItemForm(props) {
 
     setStatus(selectedValue);
     setFormData({ ...formData, status: selectedValue });
-  };
-
-  const onUpdatedAtChange = (event) => {
-    const selectedValue = event.target.value;
-
-    if (selectedValue === "#new") {
-      setOpenUpdatedAtDialog(true);
-    } else {
-      const selectedLocationObject = locationData.find(
-        (location) => location.code === selectedValue
-      );
-      const locationId = selectedLocationObject.id;
-
-      setUpdatedAt(selectedLocationObject);
-      setFormData({ ...formData, updated_at: locationId });
-    }
   };
 
   const onCreatedByChange = (event) => {
@@ -245,23 +223,6 @@ export default function ItemForm(props) {
 
       setUpdatedBy(seletedUserObject);
       setFormData({ ...formData, updated_by: userId });
-    }
-  };
-
-  const onCreatedAtChange = (event) => {
-    const selectedValue = event.target.value;
-
-    if (selectedValue === "#new") {
-      setCreatedAt("");
-      alert("Open Dialog Popup");
-    } else {
-      const selectedLocationObject = locationData.find(
-        (location) => location.code === selectedValue
-      );
-      const locationId = selectedLocationObject.id;
-
-      setCreatedAt(selectedLocationObject);
-      setFormData({ ...formData, created_at: locationId });
     }
   };
 
@@ -307,26 +268,6 @@ export default function ItemForm(props) {
     }
   };
 
-  const fetchLocation = async () => {
-    try {
-      const result = await getData("/location");
-
-      setLocationData(result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchLocationUpatedAtId = async (id) => {
-    try {
-      const result = await getData(`/location/${id}`);
-
-      setUpdatedAt(result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const fetchUserCreatedByById = async (id) => {
     try {
       const result = await getData(`/user/${id}`);
@@ -347,29 +288,9 @@ export default function ItemForm(props) {
     }
   };
 
-  const fetchLocationCreatedAtById = async (id) => {
-    try {
-      const result = await getData(`/location/${id}`);
-
-      setCreatedAt(result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const fetchUsers = async () => {
     try {
       const result = await getData("/user");
-
-      setUserData(result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchUserById = async (id) => {
-    try {
-      const result = await getData(`/user/${id}`);
 
       setUserData(result);
     } catch (error) {
@@ -410,18 +331,16 @@ export default function ItemForm(props) {
       console.log("form is new mode");
     } else if (mode === VIEW_MODE) {
       console.log("form is view mode");
-      setFormData(loadData());
+      setFormData(loadData(props.mode));
     } else if (mode === EDIT_MODE) {
       console.log("form is edit mode");
-      setFormData(loadData());
+      setFormData(loadData(props.mode));
     }
 
     fetchBrand();
 
     fetchCategory();
 
-    fetchLocation(); // transfer this and the rest to edit and new mode
-    // to save memory.
     fetchUsers();
   }, [mode]);
 
@@ -438,22 +357,14 @@ export default function ItemForm(props) {
   useEffect(() => {
     //update category_data after adding new 'category'
     if (category) {
-      const categoryObject = category_data.find((ctgry) => ctgry.code === category.code);
+      const categoryObject = category_data.find(
+        (ctgry) => ctgry.code === category.code
+      );
       if (categoryObject) {
         setFormData({ ...formData, category_id: categoryObject.id });
       }
     }
   }, [category_data, category]);
-
-  useEffect(() => {
-    //update location_data after adding new 'location'
-    if (updated_at) {
-      const locationObject = locationData.find((location) => location.code === updated_at.code);
-      if (locationObject) {
-        setFormData({ ...formData, updated_at: locationObject.id });
-      }
-    }
-  }, [locationData, updated_at]);
 
   return (
     <div>
@@ -693,41 +604,21 @@ export default function ItemForm(props) {
                   </Select>
                 </FormControl>
               </Box>
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "15%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label" size="small">
-                    Updated At
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={updated_at ? updated_at.code : ""}
-                    label="Updated At"
-                    onChange={onUpdatedAtChange}
-                    size="small"
-                    disabled={mode === "view" ? true : false}
-                  >
-                    <MenuItem value="#new">Create New</MenuItem>
-                    {locationData.map((location) => (
-                      <MenuItem key={location.id} value={location.code}>
-                        {location.code}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+              <Box sx={{ mt: 1, mr: 1, mb: 1, ml: 1, width: "15%" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimeField"]}>
+                    <DemoItem>
+                      <DateTimeField
+                        label="Updated At"
+                        size="small"
+                        disabled="false"
+                        name="updated_at"
+                        value={dayjs(formData.updated_at)}
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
               </Box>
-
-              <FormDialog
-                open={openUpdatedAtDialog}
-                name="Location Form"
-                handleClose={onUpdatedAtDialogClose}
-              >
-                <UpdatedAtFormDialog
-                  handleData={handleUpdatedAtDialogData}
-                  handleClose={onUpdatedAtDialogClose}
-                />
-              </FormDialog>
-
             </div>
             <div style={{ display: "flex" }}>
               <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: "18%" }}>
@@ -774,28 +665,20 @@ export default function ItemForm(props) {
                   </Select>
                 </FormControl>
               </Box>
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "19%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label" size="small">
-                    Created At
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={created_at ? created_at.code : ""}
-                    label="Created At"
-                    onChange={onCreatedAtChange}
-                    size="small"
-                    disabled={mode === "view" ? true : false}
-                  >
-                    <MenuItem value="#new">Create New</MenuItem>
-                    {locationData.map((location) => (
-                      <MenuItem key={location.id} value={location.code}>
-                        {location.code}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+              <Box sx={{ mt: 1, mr: 1, mb: 1, ml: 1, width: "19%" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimeField"]}>
+                    <DemoItem>
+                      <DateTimeField
+                        label="Created At"
+                        size="small"
+                        disabled="false"
+                        name="created_at"
+                        value={dayjs(formData.created_at)}
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
               </Box>
             </div>
 
