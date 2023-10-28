@@ -19,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import FloatingButtons from "../../component/FloatingButtons";
 import { deleteData, getData } from "../../services/apiService";
 import { IUOM_FORM_NEW, IUOM_FORM_EDIT, IUOM_FORM_VIEW } from "../../config";
+import TableHeader from "../../component/TableHeader";
+import TableData from "../../component/TableData";
 
 export default function ItemUnitOfMeasurePage() {
   const pageName = "Item Unit Of Measure List";
@@ -39,6 +41,13 @@ export default function ItemUnitOfMeasurePage() {
     setSelectedRows(selectedRowsData);
   };
 
+  function toTitleCase(str) {
+    return str
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
   const fetchData = async () => {
     try {
       const result = await getData("/item_unit_of_measure");
@@ -49,7 +58,7 @@ export default function ItemUnitOfMeasurePage() {
         const keys = Object.keys(result[0]);
         const generatedColumns = keys.map((key) => ({
           field: key,
-          headerName: key.toUpperCase(),
+          headerName: toTitleCase(key),
           width: 150,
         }));
 
@@ -81,7 +90,9 @@ export default function ItemUnitOfMeasurePage() {
   const onDelete = async () => {
     try {
       if (selectedRows.length > 0) {
-        const result = await deleteData(`/item_unit_of_measure/${selectedRows[0].id}`);
+        const result = await deleteData(
+          `/item_unit_of_measure/${selectedRows[0].id}`
+        );
 
         console.log("Deleted result: " + JSON.stringify(result));
 
@@ -108,91 +119,24 @@ export default function ItemUnitOfMeasurePage() {
 
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, bgcolor: "#eceff1", minHeight: "100vh" }}
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          minHeight: "100vh",
+          marginLeft: "5%",
+          maxWidth: "65%",
+        }}
       >
         <Toolbar />
 
         <BreadCrumbs />
+        <TableHeader pageName={pageName} onAdd={onAdd} />
 
-        <Card sx={{ marginTop: "2%" }}>
-          <div>
-            <Accordion defaultExpanded="false">
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                defaultExpanded="false"
-              >
-                <Typography>{pageName}</Typography>
-              </AccordionSummary>
-
-              <Divider />
-
-              <AccordionDetails>
-                <Card
-                  sx={{
-                    maxWidth: 300,
-                    minHeight: 50,
-                    bgcolor: "#ffffff",
-                    display: "flex",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      display: "flex",
-                      gap: "5%",
-                      marginTop: "2%",
-                      marginLeft: "2%",
-                    }}
-                  >
-                    <div sx={{ padding: "20" }}>
-                      <Button
-                        variant="contained"
-                        size="medium"
-                        maxWidth="200"
-                        color="success"
-                        onClick={onAdd}
-                      >
-                        Add
-                      </Button>
-                    </div>
-                    <div sx={{ padding: "20" }}>
-                      <Button variant="outlined" size="medium" maxWidth="200">
-                        Export
-                      </Button>
-                    </div>
-                    <div sx={{ padding: "20" }}>
-                      <Button variant="outlined" size="medium" maxWidth="200">
-                        Import
-                      </Button>
-                    </div>
-                  </Typography>
-                </Card>
-              </AccordionDetails>
-            </Accordion>
-          </div>
-        </Card>
-
-        <Divider />
-
-        <Card sx={{ marginTop: "15px" }}>
-          <div style={{ height: 400, width: "100%" }}>
-            <DataGrid
-              rows={data}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
-              }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
-              onRowSelectionModelChange={(ids) => {
-                handleSelectionModelChange(ids);
-              }}
-            />
-          </div>
-        </Card>
+        <TableData
+          handleSelectionModelChange={handleSelectionModelChange}
+          data={data}
+          columns={columns}
+        />
         <FloatingButtons view={onView} edit={onEdit} delete={onDelete} />
       </Box>
     </Box>

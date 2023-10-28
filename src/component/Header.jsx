@@ -11,7 +11,7 @@ export default function Header(){
             sx={{ width: `calc(100% - ${DRAWER_WIDTH}px)`, ml: `${DRAWER_WIDTH}px` }}
         >
             <Toolbar>
-            <Typography variant="h6" noWrap component="div">
+            <Typography variant="h6" noWrap component="div" sx={{fontSize: "15px"}}>
                 Inventory Management System
             </Typography>
             </Toolbar>

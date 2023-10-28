@@ -80,12 +80,11 @@ export default function SideNavigationBar() {
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText  primaryTypographyProps={{fontSize: '13px'}} primary={text} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-      <Divider />
     </Drawer>
   );
 }

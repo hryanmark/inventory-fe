@@ -17,11 +17,25 @@ import BreadCrumbs from "../../component/BreadCrumbs";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FloatingButtons from "../../component/FloatingButtons";
-import { deleteData, getData } from "../../services/apiService";
-import { ITEM_FORM_NEW, ITEM_FORM_EDIT, ITEM_FORM_VIEW } from "../../config";
+import {
+  deleteData,
+  getData,
+  getDataById,
+  postData,
+} from "../../services/apiService";
+import {
+  ITEM_FORM_NEW,
+  ITEM_FORM_EDIT,
+  ITEM_FORM_VIEW,
+  TMP_ITEM_ENDPOINT,
+} from "../../config";
+import TableHeader from "../../component/TableHeader";
 
 export default function ItemPage() {
   const pageName = "Item List";
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [columns, setColumns] = useState([]);
+  const history = useNavigate();
   const [data, setData] = useState({
     id: "",
     brand_id: "",
@@ -41,9 +55,12 @@ export default function ItemPage() {
     created_at: "",
     updated_at: "",
   });
-  const [columns, setColumns] = useState([]);
-  const history = useNavigate();
-  const [selectedRows, setSelectedRows] = useState([]);
+  
+  const [tmpData, setTpmData] = useState({
+    //id: auto icremented/generated
+    user_id: 1, //lookup to user table later
+  });
+  
 
   const handleSelectionModelChange = (ids) => {
     const selectedRowsData = ids.map((id) => data.find((row) => row.id === id));
@@ -76,8 +93,22 @@ export default function ItemPage() {
     fetchData();
   }, []);
 
+  const postTmpItemData = async () => {
+    try {
+      const result = await postData(TMP_ITEM_ENDPOINT, tmpData);
+
+      alert("post created for tmp_item: " + JSON.stringify(result));
+      localStorage.setItem("tmpItemId", result.id);
+      history(ITEM_FORM_NEW);
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  };
+
   const onAdd = () => {
-    history(ITEM_FORM_NEW);
+    //Object.keys(result).length === 0
+    postTmpItemData();
   };
 
   const onEdit = () => {
@@ -126,66 +157,7 @@ export default function ItemPage() {
 
         <BreadCrumbs />
 
-        <Card sx={{ marginTop: "2%" }}>
-          <div>
-            <Accordion defaultExpanded="false">
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                defaultExpanded="false"
-              >
-                <Typography>{pageName}</Typography>
-              </AccordionSummary>
-
-              <Divider />
-
-              <AccordionDetails>
-                <Card
-                  sx={{
-                    maxWidth: 300,
-                    minHeight: 50,
-                    bgcolor: "#ffffff",
-                    display: "flex",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      display: "flex",
-                      gap: "5%",
-                      marginTop: "2%",
-                      marginLeft: "2%",
-                    }}
-                  >
-                    <div sx={{ padding: "20" }}>
-                      <Button
-                        variant="contained"
-                        size="medium"
-                        maxWidth="200"
-                        color="success"
-                        onClick={onAdd}
-                      >
-                        Add
-                      </Button>
-                    </div>
-                    <div sx={{ padding: "20" }}>
-                      <Button variant="outlined" size="medium" maxWidth="200">
-                        Export
-                      </Button>
-                    </div>
-                    <div sx={{ padding: "20" }}>
-                      <Button variant="outlined" size="medium" maxWidth="200">
-                        Import
-                      </Button>
-                    </div>
-                  </Typography>
-                </Card>
-              </AccordionDetails>
-            </Accordion>
-          </div>
-        </Card>
-
-        <Divider />
+        <TableHeader pageName={pageName} onAdd={onAdd}/>
 
         <Card sx={{ marginTop: "15px" }}>
           <div style={{ height: 400, width: "100%" }}>

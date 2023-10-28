@@ -12,10 +12,10 @@ export default function BreadCrumbs(){
     return (
         <div role="presentation" onClick={handleClick}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link underline="hover" color="inherit" href="/">
+            <Link underline="hover" color="inherit" href="/" sx={{fontSize: "12px"}}>
               Home
             </Link>
-            <Typography color="text.primary">temporary</Typography>
+            <Typography color="text.primary" sx={{fontSize: "12px"}}>Temporary</Typography>
           </Breadcrumbs>
         </div>
     )

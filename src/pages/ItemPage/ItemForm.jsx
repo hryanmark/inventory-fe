@@ -17,7 +17,13 @@ import SideNavigationBar from "../../component/SideNavigationBar";
 import BreadCrumbs from "../../component/BreadCrumbs";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getData, getDataById, postData } from "../../services/apiService";
+import {
+  deleteData,
+  deleteDataById,
+  getData,
+  getDataById,
+  postData,
+} from "../../services/apiService";
 import {
   BRAND_ENDPOINT,
   CATEGORY_ENDPOINT,
@@ -35,7 +41,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimeField } from "@mui/x-date-pickers/DateTimeField";
 import dayjs from "dayjs";
-import { format } from 'date-fns';
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function ItemForm(props) {
   const formName = "Item Form";
@@ -56,7 +64,7 @@ export default function ItemForm(props) {
   const [userData, setUserData] = useState([]); //Used for updated_by and created_by
 
   const [formData, setFormData] = useState({
-    // id: uuidv4, //auto generated
+    id: 10, //auto generated
     brand_id: "",
     category_id: "",
     title: "", //item name
@@ -101,7 +109,10 @@ export default function ItemForm(props) {
         created_by: item.created_by,
         updated_by: item.updated_by,
         created_at: item.created_at,
-        updated_at: mode === 'view' ? item.updated_at : format(new Date(), dateTimeFormat),
+        updated_at:
+          mode === "view"
+            ? item.updated_at
+            : format(new Date(), dateTimeFormat),
       };
       localStorage.removeItem("itemData");
 
@@ -115,6 +126,7 @@ export default function ItemForm(props) {
 
   const onSubmit = async () => {
     if (mode === NEW_MODE) {
+      alert("ID is: " + formData.id);
       postItem();
     } else if (mode === EDIT_MODE) {
       putItem();
@@ -329,6 +341,10 @@ export default function ItemForm(props) {
 
     if (mode === NEW_MODE) {
       console.log("form is new mode");
+      const tmpItemId = localStorage.getItem("tmpItemId");
+      alert(tmpItemId);
+
+      setFormData({...formData, id: tmpItemId})
     } else if (mode === VIEW_MODE) {
       console.log("form is view mode");
       setFormData(loadData(props.mode));
