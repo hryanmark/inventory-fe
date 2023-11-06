@@ -23,6 +23,13 @@ export default function BrandPage() {
     setSelectedRows(selectedRowsData);
   };
 
+  const toTitleCase = (str) => {
+    return str
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
   const fetchData = async () => {
     try {
       const result = await getData("/brand");
@@ -33,7 +40,7 @@ export default function BrandPage() {
         const keys = Object.keys(result[0]);
         const generatedColumns = keys.map((key) => ({
           field: key,
-          headerName: key.toUpperCase(),
+          headerName: toTitleCase(key),
           width: 150,
         }));
 
@@ -46,6 +53,7 @@ export default function BrandPage() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line
   }, []);
 
   const onAdd = () => {
@@ -53,18 +61,32 @@ export default function BrandPage() {
   };
 
   const onEdit = () => {
-    localStorage.setItem("brandData", JSON.stringify(selectedRows));
-    history(BRAND_FORM_EDIT);
+    if (selectedRows.length > 1) {
+      alert("Cannot update multiple data simultaneously.");
+    } else if (selectedRows.length > 0) {
+      localStorage.setItem("brandData", JSON.stringify(selectedRows));
+      history(BRAND_FORM_EDIT);
+    } else {
+      alert("Select a row to edit.");
+    }
   };
 
   const onView = () => {
-    localStorage.setItem("brandData", JSON.stringify(selectedRows));
-    history(BRAND_FORM_VIEW);
+    if (selectedRows.length > 1) {
+      alert("Cannot view multiple data simultaneously.");
+    } else if (selectedRows.length > 0) {
+      localStorage.setItem("brandData", JSON.stringify(selectedRows));
+      history(BRAND_FORM_VIEW);
+    } else {
+      alert("Select a row to view.");
+    }
   };
 
   const onDelete = async () => {
     try {
-      if (selectedRows.length > 0) {
+      if (selectedRows.length > 1) {
+        alert("Cannot delete multiple data simultaneously.");
+      } else if (selectedRows.length > 0) {
         const result = await deleteData(`/brand/${selectedRows[0].id}`);
 
         console.log("Deleted result: " + JSON.stringify(result));

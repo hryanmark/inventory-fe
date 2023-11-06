@@ -24,7 +24,7 @@ export default function ItemUnitOfMeasurePage() {
     setSelectedRows(selectedRowsData);
   };
 
-  function toTitleCase(str) {
+  const toTitleCase = (str) => {
     return str
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -54,6 +54,7 @@ export default function ItemUnitOfMeasurePage() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line
   }, []);
 
   const onAdd = () => {
@@ -61,18 +62,32 @@ export default function ItemUnitOfMeasurePage() {
   };
 
   const onEdit = () => {
-    localStorage.setItem("iuomData", JSON.stringify(selectedRows));
-    history(IUOM_FORM_EDIT);
+    if (selectedRows.length > 1){ 
+      alert("Cannot edit multiple data simultaneously.");
+    } else if (selectedRows.length > 0) {
+      localStorage.setItem("iuomData", JSON.stringify(selectedRows));
+      history(IUOM_FORM_EDIT);
+    } else {
+      alert('Select a row to edit.');
+    }
   };
 
   const onView = () => {
-    localStorage.setItem("iuomData", JSON.stringify(selectedRows));
-    history(IUOM_FORM_VIEW);
+    if (selectedRows.length > 1) {
+      alert("Cannot view multiple data simultaneously.");
+    } else if (selectedRows.length > 0) {
+      localStorage.setItem("iuomData", JSON.stringify(selectedRows));
+      history(IUOM_FORM_VIEW);
+    } else {
+      alert('Select a row to delete.');
+    }
   };
 
   const onDelete = async () => {
     try {
-      if (selectedRows.length > 0) {
+      if (selectedRows.length > 1) {
+        alert("Cannot delete multiple data simultaneously.");
+      } else if (selectedRows.length > 0) {
         const result = await deleteData(
           `/item_unit_of_measure/${selectedRows[0].id}`
         );
@@ -84,7 +99,8 @@ export default function ItemUnitOfMeasurePage() {
         );
 
         setData(updatedData);
-      } else {
+      }
+      else {
         alert("Select a row to delete.");
       }
     } catch (error) {

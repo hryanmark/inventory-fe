@@ -23,6 +23,13 @@ export default function UnitOfMeasurePage() {
     setSelectedRows(selectedRowsData);
   };
 
+  const toTitleCase = (str) => {
+    return str
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
   const fetchData = async () => {
     try {
       const result = await getData("/unit_of_measure");
@@ -33,7 +40,7 @@ export default function UnitOfMeasurePage() {
         const keys = Object.keys(result[0]);
         const generatedColumns = keys.map((key) => ({
           field: key,
-          headerName: key.toUpperCase(),
+          headerName: toTitleCase(key),
           width: 150,
         }));
 
@@ -46,6 +53,7 @@ export default function UnitOfMeasurePage() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line
   }, []);
 
   const onAdd = () => {
@@ -53,18 +61,32 @@ export default function UnitOfMeasurePage() {
   };
 
   const onEdit = () => {
-    localStorage.setItem("uomData", JSON.stringify(selectedRows));
-    history(UOM_FORM_EDIT);
+    if (selectedRows.length > 1) {
+      alert("Cannot edit multiple data simultaneously.");
+    } else if (selectedRows.length > 0){
+      localStorage.setItem("uomData", JSON.stringify(selectedRows));
+      history(UOM_FORM_EDIT);
+    } else {
+      alert('Select a row to edit.');
+    }
   };
 
   const onView = () => {
-    localStorage.setItem("uomData", JSON.stringify(selectedRows));
-    history(UOM_FORM_VIEW);
+    if (selectedRows.length > 1) {
+      alert("Cannot view multiple data simultaneously.");
+    } else if (selectedRows.length > 0) {
+      localStorage.setItem("uomData", JSON.stringify(selectedRows));
+      history(UOM_FORM_VIEW);
+    } else {
+      alert('Select a row to view.');
+    }
   };
 
   const onDelete = async () => {
     try {
-      if (selectedRows.length > 0) {
+      if (selectedRows.length > 1) {
+        alert("Cannot delete multiple data simultaneously.");
+      } else if (selectedRows.length > 0) {
         const result = await deleteData(
           `/unit_of_measure/${selectedRows[0].id}`
         );
@@ -74,7 +96,8 @@ export default function UnitOfMeasurePage() {
         const updatedData = data.filter((uom) => uom.id !== selectedRows[0].id);
 
         setData(updatedData);
-      } else {
+      }
+      else {
         alert("Select a row to delete.");
       }
     } catch (error) {
