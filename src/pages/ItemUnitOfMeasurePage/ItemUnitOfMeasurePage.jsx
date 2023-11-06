@@ -1,26 +1,9 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import { DataGrid } from "@mui/x-data-grid";
-import SideNavigationBar from "../../component/SideNavigationBar";
-import Header from "../../component/Header";
-import BreadCrumbs from "../../component/BreadCrumbs";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import FloatingButtons from "../../component/FloatingButtons";
 import { deleteData, getData } from "../../services/apiService";
 import { IUOM_FORM_NEW, IUOM_FORM_EDIT, IUOM_FORM_VIEW } from "../../config";
-import TableHeader from "../../component/TableHeader";
-import TableData from "../../component/TableData";
+import PageBody from "../../component/PageBody";
 
 export default function ItemUnitOfMeasurePage() {
   const pageName = "Item Unit Of Measure List";
@@ -110,35 +93,15 @@ export default function ItemUnitOfMeasurePage() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-
-      <Header />
-
-      <SideNavigationBar />
-
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          minHeight: "100vh",
-          marginLeft: "5%",
-          maxWidth: "65%",
-        }}
-      >
-        <Toolbar />
-
-        <BreadCrumbs />
-        <TableHeader pageName={pageName} onAdd={onAdd} />
-
-        <TableData
-          handleSelectionModelChange={handleSelectionModelChange}
-          data={data}
-          columns={columns}
-        />
-        <FloatingButtons view={onView} edit={onEdit} delete={onDelete} />
-      </Box>
-    </Box>
+    <PageBody
+      pageName={pageName}
+      onAdd={onAdd}
+      onView={onView}
+      onEdit={onEdit}
+      onDelete={onDelete}
+      handleSelectionModelChange={handleSelectionModelChange}
+      data={data}
+      columns={columns}
+    />
   );
 }

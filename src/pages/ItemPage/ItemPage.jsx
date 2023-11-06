@@ -1,26 +1,9 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import { DataGrid } from "@mui/x-data-grid";
-import SideNavigationBar from "../../component/SideNavigationBar";
-import Header from "../../component/Header";
-import BreadCrumbs from "../../component/BreadCrumbs";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import FloatingButtons from "../../component/FloatingButtons";
 import {
   deleteData,
   getData,
-  getDataById,
   postData,
 } from "../../services/apiService";
 import {
@@ -29,7 +12,7 @@ import {
   ITEM_FORM_VIEW,
   TMP_ITEM_ENDPOINT,
 } from "../../config";
-import TableHeader from "../../component/TableHeader";
+import PageBody from "../../component/PageBody";
 
 export default function ItemPage() {
   const pageName = "Item List";
@@ -55,12 +38,11 @@ export default function ItemPage() {
     created_at: "",
     updated_at: "",
   });
-  
-  const [tmpData, setTpmData] = useState({
+
+  const [tmpData] = useState({
     //id: auto icremented/generated
     user_id: 1, //lookup to user table later
   });
-  
 
   const handleSelectionModelChange = (ids) => {
     const selectedRowsData = ids.map((id) => data.find((row) => row.id === id));
@@ -142,43 +124,15 @@ export default function ItemPage() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-
-      <Header />
-
-      <SideNavigationBar />
-
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3, bgcolor: "#eceff1", minHeight: "100vh" }}
-      >
-        <Toolbar />
-
-        <BreadCrumbs />
-
-        <TableHeader pageName={pageName} onAdd={onAdd}/>
-
-        <Card sx={{ marginTop: "15px" }}>
-          <div style={{ height: 400, width: "100%" }}>
-            <DataGrid
-              rows={data}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
-              }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
-              onRowSelectionModelChange={(ids) => {
-                handleSelectionModelChange(ids);
-              }}
-            />
-          </div>
-        </Card>
-        <FloatingButtons view={onView} edit={onEdit} delete={onDelete} />
-      </Box>
-    </Box>
+    <PageBody
+      pageName={pageName}
+      onAdd={onAdd}
+      onEdit={onEdit}
+      onView={onView}
+      onDelete={onDelete}
+      handleSelectionModelChange={handleSelectionModelChange}
+      data={data}
+      columns={columns}
+    />
   );
 }
