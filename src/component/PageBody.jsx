@@ -1,4 +1,4 @@
-import { Box, CssBaseline, Toolbar } from "@mui/material";
+import { Alert, Box, CssBaseline, Snackbar, Toolbar } from "@mui/material";
 import Header from "./Header";
 import SideNavigationBar from "./SideNavigationBar";
 import TableHeader from "./TableHeader";
@@ -14,7 +14,10 @@ export default function PageBody({
   onDelete,
   handleSelectionModelChange,
   data,
-  columns
+  columns,
+  message,
+  openAlert,
+  handleAlertClose,
 }) {
   return (
     <Box sx={{ display: "flex" }}>
@@ -38,6 +41,21 @@ export default function PageBody({
 
         <BreadCrumbs />
         <TableHeader pageName={pageName} onAdd={onAdd} />
+
+        <Snackbar
+          open={openAlert}
+          autoHideDuration={6000}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          onClose={handleAlertClose}
+        >
+          <Alert
+            onClose={handleAlertClose}
+            severity="info"
+            sx={{ width: "100%" }}
+          >
+            {message}
+          </Alert>
+        </Snackbar>
 
         <TableData
           handleSelectionModelChange={handleSelectionModelChange}

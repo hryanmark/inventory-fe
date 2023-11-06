@@ -12,9 +12,6 @@ import PageBody from "../../component/PageBody";
 
 export default function ItemPage() {
   const pageName = "Item List";
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [columns, setColumns] = useState([]);
-  const history = useNavigate();
   const [data, setData] = useState({
     id: "",
     brand_id: "",
@@ -34,6 +31,14 @@ export default function ItemPage() {
     created_at: "",
     updated_at: "",
   });
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [alertState, setAlertState] = useState({
+    showAlert: false,
+    messageAlert: '',
+  });
+  const { showAlert, messageAlert } = alertState;
+  const [columns, setColumns] = useState([]);
+  const history = useNavigate();
 
   const [tmpData] = useState({
     //id: auto icremented/generated
@@ -99,30 +104,30 @@ export default function ItemPage() {
 
   const onEdit = () => {
     if (selectedRows.length > 1) {
-      alert("Cannot edit multiple data simultaneously.");
+      setAlertState({showAlert: true, messageAlert: 'Cannot edit multiple data simultaneously.'});
     } else if (selectedRows.length > 0) {
       localStorage.setItem("itemData", JSON.stringify(selectedRows));
       history(ITEM_FORM_EDIT);
     } else {
-      alert("Select a row to edit.");
+      setAlertState({showAlert: true, messageAlert: 'Select a row to edit.'});
     }
   };
 
   const onView = () => {
     if (selectedRows.length > 1) {
-      alert("Cannot view multiple data simultaneously.");
+      setAlertState({showAlert: true, messageAlert: 'Cannot view multiple data simultaneously.'});
     } else if (selectedRows.length > 0) {
       localStorage.setItem("itemData", JSON.stringify(selectedRows));
       history(ITEM_FORM_VIEW);
     } else {
-      alert("Select a row to view.");
+      setAlertState({showAlert: true, messageAlert: 'Select a row to view.'});
     }
   };
 
   const onDelete = async () => {
     try {
       if (selectedRows.length > 1) {
-        alert("Cannot delete multiple data simultaneously.");
+        setAlertState({showAlert: true, messageAlert: 'Cannot delete multiple data simultaneously.'});
       } else if (selectedRows.length > 0) {
         const result = await deleteData(`/item/${selectedRows[0].id}`);
 
@@ -134,11 +139,19 @@ export default function ItemPage() {
 
         setData(updatedData);
       } else {
-        alert("Select a row to delete.");
+        setAlertState({showAlert: true, messageAlert: 'Select a row to delete.'});
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertState({...alertState, showAlert: false});
   };
 
   return (
@@ -151,6 +164,9 @@ export default function ItemPage() {
       handleSelectionModelChange={handleSelectionModelChange}
       data={data}
       columns={columns}
+      openAlert={showAlert}
+      message={messageAlert}
+      handleAlertClose={handleAlert}
     />
   );
 }

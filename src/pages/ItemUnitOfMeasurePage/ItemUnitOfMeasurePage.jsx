@@ -17,6 +17,11 @@ export default function ItemUnitOfMeasurePage() {
   const [columns, setColumns] = useState([]);
   const history = useNavigate();
   const [selectedRows, setSelectedRows] = useState([]);
+  const [alertState, setAlertState] = useState({
+    showAlert: false,
+    messageAlert: '',
+  });
+  const { showAlert, messageAlert } = alertState;
 
   const handleSelectionModelChange = (ids) => {
     const selectedRowsData = ids.map((id) => data.find((row) => row.id === id));
@@ -63,30 +68,30 @@ export default function ItemUnitOfMeasurePage() {
 
   const onEdit = () => {
     if (selectedRows.length > 1){ 
-      alert("Cannot edit multiple data simultaneously.");
+      setAlertState({showAlert: true, messageAlert: 'Cannot edit multiple data simultaneously.'});
     } else if (selectedRows.length > 0) {
       localStorage.setItem("iuomData", JSON.stringify(selectedRows));
       history(IUOM_FORM_EDIT);
     } else {
-      alert('Select a row to edit.');
+      setAlertState({showAlert: true, messageAlert: 'Select a row to edit.'});
     }
   };
 
   const onView = () => {
     if (selectedRows.length > 1) {
-      alert("Cannot view multiple data simultaneously.");
+      setAlertState({showAlert: true, messageAlert: 'Cannot view multiple data simultaneously.'});
     } else if (selectedRows.length > 0) {
       localStorage.setItem("iuomData", JSON.stringify(selectedRows));
       history(IUOM_FORM_VIEW);
     } else {
-      alert('Select a row to delete.');
+      setAlertState({showAlert: true, messageAlert: 'Select a row to view.'});
     }
   };
 
   const onDelete = async () => {
     try {
       if (selectedRows.length > 1) {
-        alert("Cannot delete multiple data simultaneously.");
+        setAlertState({showAlert: true, messageAlert: 'Cannot delete multiple data simultaneously.'});
       } else if (selectedRows.length > 0) {
         const result = await deleteData(
           `/item_unit_of_measure/${selectedRows[0].id}`
@@ -101,11 +106,19 @@ export default function ItemUnitOfMeasurePage() {
         setData(updatedData);
       }
       else {
-        alert("Select a row to delete.");
+        setAlertState({showAlert: true, messageAlert: 'Select a row to delete.'});
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertState({...alertState, showAlert: false});
   };
 
   return (
@@ -118,6 +131,9 @@ export default function ItemUnitOfMeasurePage() {
       handleSelectionModelChange={handleSelectionModelChange}
       data={data}
       columns={columns}
+      openAlert={showAlert}
+      message={messageAlert}
+      handleAlertClose={handleAlert}
     />
   );
 }
