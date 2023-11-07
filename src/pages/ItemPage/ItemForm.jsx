@@ -18,8 +18,6 @@ import BreadCrumbs from "../../component/BreadCrumbs";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
-  deleteData,
-  deleteDataById,
   getData,
   getDataById,
   postData,
@@ -42,8 +40,6 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimeField } from "@mui/x-date-pickers/DateTimeField";
 import dayjs from "dayjs";
 import { format } from "date-fns";
-import { tr } from "date-fns/locale";
-import { v4 as uuidv4 } from 'uuid';
 
 export default function ItemForm(props) {
   const formName = "Item Form";
@@ -64,7 +60,7 @@ export default function ItemForm(props) {
   const [userData, setUserData] = useState([]); //Used for updated_by and created_by
 
   const [formData, setFormData] = useState({
-    id: 10, //auto generated
+    id: 0, //updated via tmp_item_id
     brand_id: "",
     category_id: "",
     title: "", //item name
@@ -358,6 +354,7 @@ export default function ItemForm(props) {
     fetchCategory();
 
     fetchUsers();
+    // eslint-disable-next-line
   }, [mode]);
 
   useEffect(() => {
@@ -368,6 +365,7 @@ export default function ItemForm(props) {
         setFormData({ ...formData, brand_id: brandObject.id });
       }
     }
+    // eslint-disable-next-line
   }, [brand_data, brand]);
 
   useEffect(() => {
@@ -380,6 +378,7 @@ export default function ItemForm(props) {
         setFormData({ ...formData, category_id: categoryObject.id });
       }
     }
+    // eslint-disable-next-line
   }, [category_data, category]);
 
   return (
@@ -396,9 +395,9 @@ export default function ItemForm(props) {
           sx={{
             flexGrow: 1,
             p: 3,
-            bgcolor: "#eceff1",
             minHeight: "100vh",
-            display: "flex",
+            marginLeft: '5%',
+            maxWidth: '65%',
             flexDirection: "column",
           }}
         >

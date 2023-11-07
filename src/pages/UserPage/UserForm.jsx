@@ -15,7 +15,6 @@ import BreadCrumbs from "../../component/BreadCrumbs";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { postData } from "../../services/apiService";
-import { v4 as uuidv4 } from "uuid";
 import { NEW_MODE, EDIT_MODE, VIEW_MODE } from "../../config";
 
 export default function UserForm(props) {
@@ -113,6 +112,7 @@ export default function UserForm(props) {
 
   useEffect(() => {
     formMode();
+    // eslint-disable-next-line
   }, [mode]);
 
   return (
@@ -129,9 +129,9 @@ export default function UserForm(props) {
           sx={{
             flexGrow: 1,
             p: 3,
-            bgcolor: "#eceff1",
             minHeight: "100vh",
-            display: "flex",
+            marginLeft: '5%',
+            maxWidth: '65%',
             flexDirection: "column",
           }}
         >

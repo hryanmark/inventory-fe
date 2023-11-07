@@ -7,9 +7,6 @@ import {
   Card,
   CssBaseline,
   Divider,
-  FormControl,
-  MenuItem,
-  Select,
   Toolbar,
 } from "@mui/material";
 import Header from "../../component/Header";
@@ -17,8 +14,7 @@ import SideNavigationBar from "../../component/SideNavigationBar";
 import BreadCrumbs from "../../component/BreadCrumbs";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getData, getDataById, postData } from "../../services/apiService";
-import { v4 as uuidv4 } from "uuid";
+import { postData } from "../../services/apiService";
 import { NEW_MODE, EDIT_MODE, VIEW_MODE } from "../../config";
 
 export default function CategoryForm(props) {
@@ -106,6 +102,7 @@ export default function CategoryForm(props) {
 
   useEffect(() => {
     formMode();
+    // eslint-disable-next-line
   }, [mode]);
 
   return (
@@ -122,9 +119,9 @@ export default function CategoryForm(props) {
           sx={{
             flexGrow: 1,
             p: 3,
-            bgcolor: "#eceff1",
             minHeight: "100vh",
-            display: "flex",
+            marginLeft: '5%',
+            maxWidth: '65%',
             flexDirection: "column",
           }}
         >
