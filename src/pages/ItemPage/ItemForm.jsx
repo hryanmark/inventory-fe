@@ -17,11 +17,7 @@ import SideNavigationBar from "../../component/SideNavigationBar";
 import BreadCrumbs from "../../component/BreadCrumbs";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  getData,
-  getDataById,
-  postData,
-} from "../../services/apiService";
+import { getData, getDataById, postData } from "../../services/apiService";
 import {
   BRAND_ENDPOINT,
   CATEGORY_ENDPOINT,
@@ -40,6 +36,14 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DateTimeField } from "@mui/x-date-pickers/DateTimeField";
 import dayjs from "dayjs";
 import { format } from "date-fns";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
+} from "@mui/joy";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { DeleteOutlineOutlined } from "@mui/icons-material";
 
 export default function ItemForm(props) {
   const formName = "Item Form";
@@ -60,24 +64,33 @@ export default function ItemForm(props) {
   const [userData, setUserData] = useState([]); //Used for updated_by and created_by
 
   const [formData, setFormData] = useState({
-    id: 0, //updated via tmp_item_id
+    // id: 11, //updated via tmp_item_id
     brand_id: "",
     category_id: "",
-    title: "", //item name
-    description: "",
+    title: " ", //item name
+    description: " ",
     sku: "IT-5",
-    base_uom: "",
-    sales_uom: "",
-    purchase_uom: "",
-    unit_cost: "",
-    minimum_stock_level: "",
-    maximum_stock_level: "",
+    base_uom: " ",
+    sales_uom: " ",
+    purchase_uom: " ",
+    unit_cost: "0",
+    minimum_stock_level: "0",
+    maximum_stock_level: "0",
     status: "",
     created_by: "",
     updated_by: "",
     created_at: format(new Date(), dateTimeFormat),
     updated_at: format(new Date(), dateTimeFormat),
   });
+
+  const [itemUomFormData, setItemUomFormData] = useState([
+    {
+      // id: "", //auto generated
+      item_id: "", //use tmp item id
+      unit_of_measure_id: "",
+      quantity: 0,
+    },
+  ]);
 
   const loadData = (mode) => {
     const itemData = JSON.parse(localStorage.getItem("itemData"));
@@ -118,6 +131,32 @@ export default function ItemForm(props) {
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleItemUomFormChange = (e, i) => {
+    const { name, value } = e.target;
+    const onchangevalue = [...itemUomFormData];
+    onchangevalue[i][name] = value;
+    setItemUomFormData(onchangevalue);// same purpose different approach (check handleFormChange)
+  };
+
+  const onSaveItemUomData = (e) => {
+    if (e.key === "Enter") {
+      console.log(itemUomFormData);
+    }
+  };
+
+  const onAddItemUomFields = () => {
+    setItemUomFormData([
+      ...itemUomFormData,
+      { item_id: "", unit_of_measure_id: "", quantity: 0 },
+    ]);
+  };
+
+  const onRemoveItemUomField = (index) => {
+    const deleteRow = [...itemUomFormData];
+    deleteRow.splice(index, 1);
+    setItemUomFormData(deleteRow);
   };
 
   const onSubmit = async () => {
@@ -396,8 +435,8 @@ export default function ItemForm(props) {
             flexGrow: 1,
             p: 3,
             minHeight: "100vh",
-            marginLeft: '5%',
-            maxWidth: '65%',
+            marginLeft: "5%",
+            maxWidth: "65%",
             flexDirection: "column",
           }}
         >
@@ -419,44 +458,18 @@ export default function ItemForm(props) {
 
             <Divider></Divider>
 
-            <div>
-              <TextField
-                label="SKU"
-                id="outlined-basic"
-                sx={{ mt: 3, mr: 1, mb: 1, ml: 3, width: "10%" }}
-                variant="outlined"
-                size="small"
-                disabled="true"
-                name="sku"
-                value={formData.sku}
-                onChange={handleFormChange}
-              />
+            <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
                 label="Item Name"
                 id="outlined-basic"
-                sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "15%" }}
+                sx={{ mt: 3, mr: 1, ml: 5, width: "40%" }}
                 variant="outlined"
                 size="small"
-                disabled={mode === "view" ? true : false}
                 name="title"
                 value={formData.title}
                 onChange={handleFormChange}
               />
-              <TextField
-                label="Description"
-                id="outlined-basic"
-                sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "30%" }}
-                variant="outlined"
-                size="small"
-                disabled={mode === "view" ? true : false}
-                name="description"
-                value={formData.description}
-                onChange={handleFormChange}
-              />
-            </div>
-
-            <div style={{ display: "flex" }}>
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: "15%" }}>
+              <Box sx={{ mt: 3, width: "30%" }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Brand
@@ -464,7 +477,7 @@ export default function ItemForm(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={brand ? brand.code : ""} //object
+                    value={brand ? brand.code : " "} //object
                     label="Brand"
                     onChange={onBrandChange}
                     size="small"
@@ -491,7 +504,7 @@ export default function ItemForm(props) {
                 />
               </FormDialog>
 
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "15%" }}>
+              <Box sx={{ mt: 3, mr: 1, ml: 1, width: "30%" }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Category
@@ -499,7 +512,7 @@ export default function ItemForm(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={category ? category.code : ""}
+                    value={category ? category.code : " "}
                     label="Category"
                     onChange={onCategoryChange}
                     size="small"
@@ -525,47 +538,29 @@ export default function ItemForm(props) {
                   handleClose={onCategoryDialogClose}
                 />
               </FormDialog>
+            </div>
 
+            <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                label="Base Unit Of Measure"
-                id="outlined-basic"
-                sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "25%" }}
+                label="Description"
+                id="outlined-multiline-static"
+                sx={{ mt: 2.5, mr: 1, ml: 5, width: "100%" }}
                 variant="outlined"
-                size="small"
-                disabled={mode === "view" ? true : false}
-                name="base_uom"
-                value={formData.base_uom}
+                size="large"
+                name="description"
+                multiline
+                maxRows={3}
+                placeholder="Description"
+                value={formData.description}
                 onChange={handleFormChange}
               />
             </div>
-            <div>
-              <TextField
-                label="Sales Unit Of Measure"
-                id="outlined-basic"
-                sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: "15%" }}
-                variant="outlined"
-                size="small"
-                disabled={mode === "view" ? true : false}
-                name="sales_uom"
-                value={formData.sales_uom}
-                onChange={handleFormChange}
-              />
-              <TextField
-                label="Purchase Unit Of Measure"
-                id="outlined-basic"
-                sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "15%" }}
-                variant="outlined"
-                size="small"
-                disabled={mode === "view" ? true : false}
-                name="purchase_uom"
-                value={formData.purchase_uom}
-                onChange={handleFormChange}
-              />
+            <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
                 label="Unit Cost"
                 id="outlined-basic"
                 type="number"
-                sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "25%" }}
+                sx={{ mt: 2.5, mr: 1, ml: 5, width: "25%" }}
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
@@ -573,13 +568,11 @@ export default function ItemForm(props) {
                 value={formData.unit_cost}
                 onChange={handleFormChange}
               />
-            </div>
-            <div style={{ display: "flex" }}>
               <TextField
-                label="Minimum Stock Level"
+                label="Minimum Stock"
                 id="outlined-basic"
                 type="number"
-                sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: "13%" }}
+                sx={{ mt: 2.5, mr: 1, ml: 1, width: "25%" }}
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
@@ -588,10 +581,10 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <TextField
-                label="Maximum Stock Level"
+                label="Maximum Stock"
                 id="outlined-basic"
                 type="number"
-                sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "13%" }}
+                sx={{ mt: 2.5, mr: 1, ml: 1, width: "25%" }}
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
@@ -599,7 +592,7 @@ export default function ItemForm(props) {
                 value={formData.maximum_stock_level}
                 onChange={handleFormChange}
               />
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "13%" }}>
+              <Box sx={{ mt: 2.5, mr: 1, ml: 1, width: "25%" }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Status
@@ -607,7 +600,7 @@ export default function ItemForm(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={status}
+                    value={status ? status : " "}
                     label="Status"
                     onChange={onStatusChange}
                     size="small"
@@ -619,24 +612,108 @@ export default function ItemForm(props) {
                   </Select>
                 </FormControl>
               </Box>
-              <Box sx={{ mt: 1, mr: 1, mb: 1, ml: 1, width: "15%" }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimeField"]}>
-                    <DemoItem>
-                      <DateTimeField
-                        label="Updated At"
-                        size="small"
-                        disabled="false"
-                        name="updated_at"
-                        value={dayjs(formData.updated_at)}
-                      />
-                    </DemoItem>
-                  </DemoContainer>
-                </LocalizationProvider>
-              </Box>
             </div>
-            <div style={{ display: "flex" }}>
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 3, width: "18%" }}>
+            <Card sx={{ display: "flex", mt: 2, ml: 5, mr: "11%" }}>
+              <Accordion
+                expanded={true}
+                sx={{ width: "97%", mt: 1, ml: 2, mr: 2 }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>Item Unit Of Measure</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {itemUomFormData.map((itemUom, index) => (
+                    <div
+                      key={index}
+                      style={{ display: "flex", marginRight: "10%" }}
+                    >
+                      <TextField
+                        key={index}
+                        label="Unit Of Measure"
+                        id="outlined-basic"
+                        sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "50%" }}
+                        variant="outlined"
+                        size="small"
+                        name="unit_of_measure_id"
+                        value={itemUom.unit_of_measure_id}
+                        onChange={(e) => handleItemUomFormChange(e, index)}
+                        onKeyDown={(e) => onSaveItemUomData(e)}
+                      />
+                      <TextField
+                        label="Quantity"
+                        id="outlined-basic"
+                        sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "50%" }}
+                        variant="outlined"
+                        size="small"
+                        name="quantity"
+                        type="number"
+                        value={itemUom.quantity}
+                        onChange={(e) => handleItemUomFormChange(e, index)}
+                        onKeyDown={(e) => onSaveItemUomData(e)}
+                      />
+                      <DeleteOutlineOutlined
+                        key={index}
+                        sx={{ mt: 4, size: "small" }}
+                        onClick={() => onRemoveItemUomField(index)}
+                      />
+                    </div>
+                  ))}
+                  <div style={{ display: "flex" }}>
+                    <Button
+                      sx={{ mt: 3, ml: 3, mb: 2 }}
+                      onClick={onAddItemUomFields}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            </Card>
+            <div style={{ display: "flex", marginRight: "10%" }}>
+              <TextField
+                label="Base Unit Of Measure"
+                id="outlined-basic"
+                sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
+                variant="outlined"
+                size="small"
+                disabled={mode === "view" ? true : false}
+                name="base_uom"
+                value={formData.base_uom}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div style={{ display: "flex", marginRight: "10%" }}>
+              <TextField
+                label="Sales Unit Of Measure"
+                id="outlined-basic"
+                sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
+                variant="outlined"
+                size="small"
+                disabled={mode === "view" ? true : false}
+                name="sales_uom"
+                value={formData.sales_uom}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div style={{ display: "flex", marginRight: "10%" }}>
+              <TextField
+                label="Purchase Unit Of Measure"
+                id="outlined-basic"
+                sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
+                variant="outlined"
+                size="small"
+                disabled={mode === "view" ? true : false}
+                name="purchase_uom"
+                value={formData.purchase_uom}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div style={{ display: "flex", marginRight: "10%" }}>
+              <Box sx={{ mt: 2.5, mr: 1, ml: 5, width: "50%" }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Created By
@@ -644,7 +721,7 @@ export default function ItemForm(props) {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={created_by ? created_by.name : ""}
+                    value={created_by ? created_by.name : " "}
                     label="Created By"
                     onChange={onCreatedByChange}
                     size="small"
@@ -658,29 +735,7 @@ export default function ItemForm(props) {
                   </Select>
                 </FormControl>
               </Box>
-              <Box sx={{ mt: 2, mr: 1, mb: 1, ml: 1, width: "18%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label" size="small">
-                    Updated By
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={updated_by ? updated_by.name : ""}
-                    label="Updated By"
-                    onChange={onUpdatedByChange}
-                    size="small"
-                    disabled={mode === "view" ? true : false}
-                  >
-                    {userData.map((user) => (
-                      <MenuItem key={user.id} value={user.name}>
-                        {user.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-              <Box sx={{ mt: 1, mr: 1, mb: 1, ml: 1, width: "19%" }}>
+              <Box sx={{ mt: 1.5, ml: 1, mr: 1, width: "50%" }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DateTimeField"]}>
                     <DemoItem>
@@ -696,12 +751,51 @@ export default function ItemForm(props) {
                 </LocalizationProvider>
               </Box>
             </div>
+            <div style={{ display: "flex", marginRight: "10%" }}>
+              <Box sx={{ mt: 2.5, ml: 5, mr: 1, width: "50%" }}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label" size="small">
+                    Updated By
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={updated_by ? updated_by.name : " "}
+                    label="Updated By"
+                    onChange={onUpdatedByChange}
+                    size="small"
+                    disabled={mode === "view" ? true : false}
+                  >
+                    {userData.map((user) => (
+                      <MenuItem key={user.id} value={user.name}>
+                        {user.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+              <Box sx={{ mt: 1.5, ml: 1, mr: 1, width: "50%" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimeField"]}>
+                    <DemoItem>
+                      <DateTimeField
+                        label="Updated At"
+                        size="small"
+                        disabled="false"
+                        name="updated_at"
+                        value={dayjs(formData.updated_at)}
+                      />
+                    </DemoItem>
+                  </DemoContainer>
+                </LocalizationProvider>
+              </Box>
+            </div>
 
             <div>
-              <Button sx={{ m: 3 }} onClick={onSubmit}>
+              <Button sx={{ mt: 3, ml: 5, mb: 2 }} onClick={onSubmit}>
                 Submit
               </Button>
-              <Button sx={{ m: 3 }} onClick={onCancel}>
+              <Button sx={{ mt: 3, ml: 3, mb: 2 }} onClick={onCancel}>
                 Cancel
               </Button>
             </div>
