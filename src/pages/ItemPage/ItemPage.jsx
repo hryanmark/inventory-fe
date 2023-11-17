@@ -88,7 +88,6 @@ export default function ItemPage() {
     try {
       const result = await postData(TMP_ITEM_ENDPOINT, tmpData);
 
-      alert("post created for tmp_item: " + JSON.stringify(result));
       localStorage.setItem("tmpItemId", result.id);
       history(ITEM_FORM_NEW);
     } catch (error) {
@@ -98,7 +97,6 @@ export default function ItemPage() {
   };
 
   const onAdd = () => {
-    //Object.keys(result).length === 0
     postTmpItemData();
   };
 

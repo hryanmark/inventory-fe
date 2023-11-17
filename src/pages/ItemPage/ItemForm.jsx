@@ -49,6 +49,7 @@ export default function ItemForm(props) {
   const formName = "Item Form";
   const history = useNavigate();
   const dateTimeFormat = `yyyy-MM-dd'T'HH:mm:ss`;
+  const [errorFlag] = useState(false);
   const [mode, setMode] = useState("");
   const [openBrandDialog, setOpenBrandDialog] = useState(false);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
@@ -58,13 +59,15 @@ export default function ItemForm(props) {
   const [status, setStatus] = useState("");
   const [created_by, setCreatedBy] = useState(null);
   const [updated_by, setUpdatedBy] = useState(null);
+  const [unitOfMeasure, setUnitOfMeasure] = useState([]); //array of object
 
   const [brand_data, setBrandData] = useState([]);
   const [category_data, setCategoryData] = useState([]);
+  const [unit_of_measure_data, setUnitOfMeasureData] = useState([]);
   const [userData, setUserData] = useState([]); //Used for updated_by and created_by
 
   const [formData, setFormData] = useState({
-    // id: 11, //updated via tmp_item_id
+    // id: 0, //updated via tmp_item_id
     brand_id: "",
     category_id: "",
     title: " ", //item name
@@ -86,9 +89,9 @@ export default function ItemForm(props) {
   const [itemUomFormData, setItemUomFormData] = useState([
     {
       // id: "", //auto generated
-      item_id: "", //use tmp item id
+      item_id: "1", //use tmp item id
       unit_of_measure_id: "",
-      quantity: 0,
+      quantity: "0",
     },
   ]);
 
@@ -130,27 +133,34 @@ export default function ItemForm(props) {
   };
 
   const handleFormChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleItemUomFormChange = (e, i) => {
     const { name, value } = e.target;
     const onchangevalue = [...itemUomFormData];
     onchangevalue[i][name] = value;
-    setItemUomFormData(onchangevalue);// same purpose different approach (check handleFormChange)
-  };
-
-  const onSaveItemUomData = (e) => {
-    if (e.key === "Enter") {
-      console.log(itemUomFormData);
-    }
+    setItemUomFormData(onchangevalue); // same purpose different approach (check handleFormChange)
   };
 
   const onAddItemUomFields = () => {
-    setItemUomFormData([
-      ...itemUomFormData,
-      { item_id: "", unit_of_measure_id: "", quantity: 0 },
-    ]);
+    //used for item_id field
+    const tmpItemId = localStorage.getItem("tmpItemId");
+
+    //Can't add new field if field UOM or quantiy is empty or zero
+    const hasZeroQuantity = itemUomFormData.some(
+      (item) => item.unit_of_measure_id === "" || item.quantity === "0"
+    );
+
+    if (!hasZeroQuantity) {
+      setItemUomFormData([
+        ...itemUomFormData,
+        { item_id: tmpItemId, unit_of_measure_id: "", quantity: "0" },
+      ]);
+    } else {
+      alert("Unit of Measure and Quantity must not be empty or equal to 0."); //use component for this.
+    }
   };
 
   const onRemoveItemUomField = (index) => {
@@ -161,8 +171,8 @@ export default function ItemForm(props) {
 
   const onSubmit = async () => {
     if (mode === NEW_MODE) {
-      alert("ID is: " + formData.id);
       postItem();
+      postItemUom();
     } else if (mode === EDIT_MODE) {
       putItem();
     } else if (mode === VIEW_MODE) {
@@ -194,26 +204,13 @@ export default function ItemForm(props) {
     }
   };
 
-  const onBrandDialogClose = () => {
-    setOpenBrandDialog(false);
-  };
-
-  const onCategoryDialogClose = () => {
-    setOpenCategoryDialog(false);
-  };
-
-  // const onUpdatedAtDialogClose = () => {
-  //   setOpenUpdatedAtDialog(false);
-  // };
-
   const handleBrandDialogData = (data) => {
     setBrandData((prevData) => [...prevData, data]);
     setBrand(data);
   };
 
-  const handleCategoryDialogData = (data) => {
-    setCategoryData((prevData) => [...prevData, data]);
-    setCategory(data);
+  const onBrandDialogClose = () => {
+    setOpenBrandDialog(false);
   };
 
   const onCategoryChange = (event) => {
@@ -229,6 +226,39 @@ export default function ItemForm(props) {
 
       setCategory(selectedCategoryObject);
       setFormData({ ...formData, category_id: categoryId });
+    }
+  };
+
+  const handleCategoryDialogData = (data) => {
+    setCategoryData((prevData) => [...prevData, data]);
+    setCategory(data);
+  };
+
+  const onCategoryDialogClose = () => {
+    setOpenCategoryDialog(false);
+  };
+
+  const onUnitOfMeasureChange = (e, index) => {
+    const selectedValue = e.target.value;
+
+    if (selectedValue === "#new") {
+      // setOpenBrandDialog(true);
+    } else {
+      const selectedUomObject = unit_of_measure_data.find(
+        (uom) => uom.code === selectedValue //check if uom code is equivalent to selectedValue code
+      );
+      const uomId = selectedUomObject.id;
+
+      const onchangeUomValue = [...unitOfMeasure];
+      onchangeUomValue[index] = selectedUomObject;
+
+      setUnitOfMeasure(onchangeUomValue); // pause sa ko. BASTA I think need ni array para per
+      //index ang mapping
+
+      const updatedItemUomFormData = [...itemUomFormData];
+      updatedItemUomFormData[index][e.target.name] = uomId;
+
+      setItemUomFormData(updatedItemUomFormData);
     }
   };
 
@@ -272,7 +302,7 @@ export default function ItemForm(props) {
       setFormData({ ...formData, updated_by: userId });
     }
   };
-
+  //List of brands used for Select component
   const fetchBrand = async () => {
     try {
       const result = await getData(BRAND_ENDPOINT);
@@ -282,7 +312,7 @@ export default function ItemForm(props) {
       console.error(error);
     }
   };
-
+  //specific brand used for retrieving brand such as edit and view mode
   const fetchBrandById = async (id) => {
     try {
       const result = await getDataById(`${BRAND_ENDPOINT}/${id}`);
@@ -345,11 +375,21 @@ export default function ItemForm(props) {
     }
   };
 
+  const fetchUnitOfMeasures = async () => {
+    try {
+      const result = await getData("/unit_of_measure");
+
+      setUnitOfMeasureData(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const postItem = async () => {
     try {
       const result = await postData(ITEM_ENDPOINT, formData);
 
-      alert("post created : " + result);
+      alert("post created for item : " + result);
       history(ROUTE_ITEM_PAGE);
     } catch (error) {
       // Handle error, e.g., display an error message to the user
@@ -371,15 +411,34 @@ export default function ItemForm(props) {
     }
   };
 
+  const postItemUom = async () => {
+    try {
+      for (let i = 0; itemUomFormData.length > i; i++) {
+        const result = await postData(
+          "item_unit_of_measure",
+          itemUomFormData[i]
+        );
+
+        console.log("post created for Item Uom : " + result);
+      }
+    } catch (error) {
+      // Handle error, e.g., display an error message to the user
+      console.error(error);
+    } finally {
+    }
+  };
+
   useEffect(() => {
     setMode(props.mode);
 
     if (mode === NEW_MODE) {
       console.log("form is new mode");
       const tmpItemId = localStorage.getItem("tmpItemId");
-      alert(tmpItemId);
+      const updatedUom = [...itemUomFormData];
+      updatedUom[0]["item_id"] = tmpItemId; //updated initialized item_id value since this is an array of objects
 
-      setFormData({...formData, id: tmpItemId})
+      setFormData({ ...formData, id: tmpItemId });
+      setItemUomFormData(updatedUom);
     } else if (mode === VIEW_MODE) {
       console.log("form is view mode");
       setFormData(loadData(props.mode));
@@ -388,11 +447,14 @@ export default function ItemForm(props) {
       setFormData(loadData(props.mode));
     }
 
+    //Put all these in new and edit mode
     fetchBrand();
 
     fetchCategory();
 
     fetchUsers();
+
+    fetchUnitOfMeasures();
     // eslint-disable-next-line
   }, [mode]);
 
@@ -460,6 +522,8 @@ export default function ItemForm(props) {
 
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
+                error={errorFlag}
+                required
                 label="Item Name"
                 id="outlined-basic"
                 sx={{ mt: 3, mr: 1, ml: 5, width: "40%" }}
@@ -470,7 +534,7 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <Box sx={{ mt: 3, width: "30%" }}>
-                <FormControl fullWidth>
+                <FormControl error={errorFlag} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Brand
                   </InputLabel>
@@ -505,7 +569,7 @@ export default function ItemForm(props) {
               </FormDialog>
 
               <Box sx={{ mt: 3, mr: 1, ml: 1, width: "30%" }}>
-                <FormControl fullWidth>
+                <FormControl error={errorFlag} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Category
                   </InputLabel>
@@ -542,6 +606,7 @@ export default function ItemForm(props) {
 
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
+                error={errorFlag}
                 label="Description"
                 id="outlined-multiline-static"
                 sx={{ mt: 2.5, mr: 1, ml: 5, width: "100%" }}
@@ -557,6 +622,8 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
+                error={errorFlag}
+                required
                 label="Unit Cost"
                 id="outlined-basic"
                 type="number"
@@ -569,6 +636,8 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <TextField
+                error={errorFlag}
+                required
                 label="Minimum Stock"
                 id="outlined-basic"
                 type="number"
@@ -581,6 +650,8 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <TextField
+                error={errorFlag}
+                required
                 label="Maximum Stock"
                 id="outlined-basic"
                 type="number"
@@ -593,7 +664,7 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <Box sx={{ mt: 2.5, mr: 1, ml: 1, width: "25%" }}>
-                <FormControl fullWidth>
+                <FormControl error={errorFlag} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Status
                   </InputLabel>
@@ -631,29 +702,51 @@ export default function ItemForm(props) {
                       key={index}
                       style={{ display: "flex", marginRight: "10%" }}
                     >
+                      <Box sx={{ mt: 2, mr: 1, ml: 1, width: "50%" }}>
+                        <FormControl error={errorFlag} required fullWidth>
+                          <InputLabel
+                            id="demo-simple-select-label"
+                            size="small"
+                          >
+                            Unit Of Measure
+                          </InputLabel>
+                          <Select
+                            key={index}
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            size="small"
+                            name="unit_of_measure_id"
+                            value={
+                              unitOfMeasure[index]
+                                ? unitOfMeasure[index].code
+                                : " "
+                            } //object
+                            label="Unit Of Measure"
+                            onChange={(e) => onUnitOfMeasureChange(e, index)}
+                            disabled={mode === "view" ? true : false}
+                          >
+                            <MenuItem value="#new">Create New</MenuItem>
+                            {unit_of_measure_data.map((uom) => (
+                              <MenuItem key={uom.id} value={uom.code}>
+                                {uom.code}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Box>
                       <TextField
                         key={index}
-                        label="Unit Of Measure"
-                        id="outlined-basic"
-                        sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "50%" }}
-                        variant="outlined"
-                        size="small"
-                        name="unit_of_measure_id"
-                        value={itemUom.unit_of_measure_id}
-                        onChange={(e) => handleItemUomFormChange(e, index)}
-                        onKeyDown={(e) => onSaveItemUomData(e)}
-                      />
-                      <TextField
+                        error={errorFlag}
+                        required
                         label="Quantity"
                         id="outlined-basic"
-                        sx={{ mt: 3, mr: 1, mb: 1, ml: 1, width: "50%" }}
+                        sx={{ mt: 2, mr: 1, ml: 1, width: "50%" }}
                         variant="outlined"
                         size="small"
                         name="quantity"
                         type="number"
                         value={itemUom.quantity}
                         onChange={(e) => handleItemUomFormChange(e, index)}
-                        onKeyDown={(e) => onSaveItemUomData(e)}
                       />
                       <DeleteOutlineOutlined
                         key={index}
@@ -675,6 +768,7 @@ export default function ItemForm(props) {
             </Card>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
+                error={errorFlag}
                 label="Base Unit Of Measure"
                 id="outlined-basic"
                 sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
@@ -688,6 +782,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
+                error={errorFlag}
                 label="Sales Unit Of Measure"
                 id="outlined-basic"
                 sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
@@ -701,6 +796,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
+                error={errorFlag}
                 label="Purchase Unit Of Measure"
                 id="outlined-basic"
                 sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
@@ -714,7 +810,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <Box sx={{ mt: 2.5, mr: 1, ml: 5, width: "50%" }}>
-                <FormControl fullWidth>
+                <FormControl error={errorFlag} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Created By
                   </InputLabel>
@@ -740,6 +836,8 @@ export default function ItemForm(props) {
                   <DemoContainer components={["DateTimeField"]}>
                     <DemoItem>
                       <DateTimeField
+                        error={errorFlag}
+                        required
                         label="Created At"
                         size="small"
                         disabled="false"
@@ -753,7 +851,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <Box sx={{ mt: 2.5, ml: 5, mr: 1, width: "50%" }}>
-                <FormControl fullWidth>
+                <FormControl error={errorFlag} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Updated By
                   </InputLabel>
@@ -779,6 +877,8 @@ export default function ItemForm(props) {
                   <DemoContainer components={["DateTimeField"]}>
                     <DemoItem>
                       <DateTimeField
+                        error={errorFlag}
+                        required
                         label="Updated At"
                         size="small"
                         disabled="false"
