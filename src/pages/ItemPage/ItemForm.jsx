@@ -49,8 +49,8 @@ export default function ItemForm(props) {
   const formName = "Item Form";
   const history = useNavigate();
   const dateTimeFormat = `yyyy-MM-dd'T'HH:mm:ss`;
-  const [errorFlag] = useState(false);
   const [mode, setMode] = useState("");
+  const [formError, setFormError] = useState({});
   const [openBrandDialog, setOpenBrandDialog] = useState(false);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
 
@@ -170,7 +170,69 @@ export default function ItemForm(props) {
   };
 
   const onSubmit = async () => {
+    //Reset state
+    setFormError({});
+
     if (mode === NEW_MODE) {
+      const newErrors = {};
+
+      if (formData.title === " " || formData.title === "") {
+        newErrors.title = true;
+      }
+      if (brand === null) {
+        newErrors.brand = true;
+      }
+      if (category === null) {
+        newErrors.category = true;
+      }
+      if (
+        formData.unit_cost === "0" ||
+        formData.unit_cost === " " ||
+        formData.unit_cost === ""
+      ) {
+        newErrors.unit_cost = true;
+      }
+      if (
+        formData.minimum_stock_level === "0" ||
+        formData.minimum_stock_level === " " ||
+        formData.minimum_stock_level === ""
+      ) {
+        newErrors.minimum_stock_level = true;
+      }
+      if (
+        formData.maximum_stock_level === "0" ||
+        formData.maximum_stock_level === " " ||
+        formData.maximum_stock_level === ""
+      ) {
+        newErrors.maximum_stock_level = true;
+      }
+      if (
+        formData.status === "0" ||
+        formData.status === " " ||
+        formData.status === ""
+      ) {
+        newErrors.status = true;
+      }
+      if (
+        formData.created_by === "0" ||
+        formData.created_by === " " ||
+        formData.created_by === ""
+      ) {
+        newErrors.created_by = true;
+      }
+      if (
+        formData.updated_by === "0" ||
+        formData.updated_by === " " ||
+        formData.updated_by === ""
+      ) {
+        newErrors.updated_by = true;
+      }
+      if (Object.keys(newErrors).length > 0) {
+        setFormError(newErrors);
+        alert("there is error");
+        return;
+      }
+
       postItem();
       postItemUom();
     } else if (mode === EDIT_MODE) {
@@ -522,7 +584,7 @@ export default function ItemForm(props) {
 
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                error={errorFlag}
+                error={formError.title}
                 required
                 label="Item Name"
                 id="outlined-basic"
@@ -534,7 +596,7 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <Box sx={{ mt: 3, width: "30%" }}>
-                <FormControl error={errorFlag} required fullWidth>
+                <FormControl error={formError.brand} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Brand
                   </InputLabel>
@@ -569,7 +631,7 @@ export default function ItemForm(props) {
               </FormDialog>
 
               <Box sx={{ mt: 3, mr: 1, ml: 1, width: "30%" }}>
-                <FormControl error={errorFlag} required fullWidth>
+                <FormControl error={formError.category} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Category
                   </InputLabel>
@@ -606,7 +668,7 @@ export default function ItemForm(props) {
 
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                error={errorFlag}
+                error={formError.description}
                 label="Description"
                 id="outlined-multiline-static"
                 sx={{ mt: 2.5, mr: 1, ml: 5, width: "100%" }}
@@ -622,7 +684,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                error={errorFlag}
+                error={formError.unit_cost}
                 required
                 label="Unit Cost"
                 id="outlined-basic"
@@ -636,7 +698,7 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <TextField
-                error={errorFlag}
+                error={formError.minimum_stock_level}
                 required
                 label="Minimum Stock"
                 id="outlined-basic"
@@ -650,7 +712,7 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <TextField
-                error={errorFlag}
+                error={formError.maximum_stock_level}
                 required
                 label="Maximum Stock"
                 id="outlined-basic"
@@ -664,7 +726,7 @@ export default function ItemForm(props) {
                 onChange={handleFormChange}
               />
               <Box sx={{ mt: 2.5, mr: 1, ml: 1, width: "25%" }}>
-                <FormControl error={errorFlag} required fullWidth>
+                <FormControl error={formError.status} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Status
                   </InputLabel>
@@ -703,7 +765,7 @@ export default function ItemForm(props) {
                       style={{ display: "flex", marginRight: "10%" }}
                     >
                       <Box sx={{ mt: 2, mr: 1, ml: 1, width: "50%" }}>
-                        <FormControl error={errorFlag} required fullWidth>
+                        <FormControl error={formError.tmp} required fullWidth>
                           <InputLabel
                             id="demo-simple-select-label"
                             size="small"
@@ -736,7 +798,7 @@ export default function ItemForm(props) {
                       </Box>
                       <TextField
                         key={index}
-                        error={errorFlag}
+                        error={formError.tmp}
                         required
                         label="Quantity"
                         id="outlined-basic"
@@ -747,12 +809,18 @@ export default function ItemForm(props) {
                         type="number"
                         value={itemUom.quantity}
                         onChange={(e) => handleItemUomFormChange(e, index)}
+                        disabled={mode === "view" ? true : false}
                       />
-                      <DeleteOutlineOutlined
-                        key={index}
-                        sx={{ mt: 4, size: "small" }}
-                        onClick={() => onRemoveItemUomField(index)}
-                      />
+                      {/* made it like this since there is no disabled prop in DeleteOutlineOutlined*/}
+                      {mode === "view" ? (
+                        <></>
+                      ) : (
+                        <DeleteOutlineOutlined
+                          key={index}
+                          sx={{ mt: 4, size: "small" }}
+                          onClick={() => onRemoveItemUomField(index)}
+                        />
+                      )}
                     </div>
                   ))}
                   <div style={{ display: "flex" }}>
@@ -768,7 +836,7 @@ export default function ItemForm(props) {
             </Card>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                error={errorFlag}
+                error={formError.tmp}
                 label="Base Unit Of Measure"
                 id="outlined-basic"
                 sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
@@ -782,7 +850,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                error={errorFlag}
+                error={formError.tmp}
                 label="Sales Unit Of Measure"
                 id="outlined-basic"
                 sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
@@ -796,7 +864,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                error={errorFlag}
+                error={formError.tmp}
                 label="Purchase Unit Of Measure"
                 id="outlined-basic"
                 sx={{ mt: 2.5, ml: 5, mr: 1, width: "100%" }}
@@ -810,7 +878,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <Box sx={{ mt: 2.5, mr: 1, ml: 5, width: "50%" }}>
-                <FormControl error={errorFlag} required fullWidth>
+                <FormControl error={formError.created_by} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Created By
                   </InputLabel>
@@ -836,7 +904,7 @@ export default function ItemForm(props) {
                   <DemoContainer components={["DateTimeField"]}>
                     <DemoItem>
                       <DateTimeField
-                        error={errorFlag}
+                        error={formError.tmp}
                         required
                         label="Created At"
                         size="small"
@@ -851,7 +919,7 @@ export default function ItemForm(props) {
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <Box sx={{ mt: 2.5, ml: 5, mr: 1, width: "50%" }}>
-                <FormControl error={errorFlag} required fullWidth>
+                <FormControl error={formError.updated_by} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Updated By
                   </InputLabel>
@@ -877,7 +945,7 @@ export default function ItemForm(props) {
                   <DemoContainer components={["DateTimeField"]}>
                     <DemoItem>
                       <DateTimeField
-                        error={errorFlag}
+                        error={formError.tmp}
                         required
                         label="Updated At"
                         size="small"
