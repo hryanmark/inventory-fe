@@ -32,8 +32,8 @@ export default function ItemUnitOfMeasureForm(props) {
 
   const [formData, setFormData] = useState({
     // id: uuidv4, //auto generated
-    item_id: "",
-    unit_of_measure_id: "",
+    itemId: "",
+    unitOfMeasureId: "",
     quantity: "",
   });
 
@@ -41,13 +41,13 @@ export default function ItemUnitOfMeasureForm(props) {
     const iuomData = JSON.parse(localStorage.getItem("iuomData"));
 
     for (const iuom of iuomData) {
-      fetchItemById(iuom.item_id);
-      fetchUomById(iuom.unit_of_measure_id);
+      fetchItemById(iuom.itemId);
+      fetchUomById(iuom.unitOfMeasureId);
 
       const existingData = {
         id: iuom.id,
-        item_id: iuom.item_id,
-        unit_of_measure_id: iuom.unit_of_measure_id,
+        itemId: iuom.itemId,
+        unitOfMeasureId: iuom.unitOfMeasureId,
         quantity: iuom.quantity,
       };
 
@@ -86,7 +86,7 @@ export default function ItemUnitOfMeasureForm(props) {
       const itemId = selectedItemObject.id;
 
       setItemTitle(selectedItemObject);
-      setFormData({ ...formData, item_id: itemId });
+      setFormData({ ...formData, itemId: itemId });
     }
   };
 
@@ -103,7 +103,7 @@ export default function ItemUnitOfMeasureForm(props) {
       const uomId = selectedUomObject.id;
 
       setUomCode(selectedUomObject);
-      setFormData({ ...formData, unit_of_measure_id: uomId });
+      setFormData({ ...formData, unitOfMeasureId: uomId });
     }
   };
 
@@ -165,6 +165,7 @@ export default function ItemUnitOfMeasureForm(props) {
       const result = await postData("/item_unit_of_measure", formData);
 
       alert("put created : " + result);
+      alert(JSON.stringify(result));
       history("/itemunitofmeasure");
     } catch (error) {
       // Handle error, e.g., display an error message to the user

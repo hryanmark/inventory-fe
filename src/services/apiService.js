@@ -22,6 +22,15 @@ export const getDataById = async (endpoint) => {
   }
 }
 
+export const getDataByItemId = async (endpoint) => {
+  try {
+    const response = await apiService.get(endpoint);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const postData = async (endpoint, data) => {
   try {
     const response = await apiService.post(endpoint, data);

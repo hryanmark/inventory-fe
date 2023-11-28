@@ -25,8 +25,8 @@ export default function ItemBarcodeForm(props) {
   const [formData, setFormData] = useState({
     // id: uuidv4, //auto generated
     code: "",
-    item_id: "",
-    item_uom: "",
+    itemId: "",
+    itemUom: "",
     type: "",
   });
 
@@ -37,8 +37,8 @@ export default function ItemBarcodeForm(props) {
       const existingData = {
         id: barcode.id,
         code: barcode.code,
-        item_id: barcode.item_id,
-        item_uom: barcode.item_uom,
+        itemId: barcode.itemId,
+        itemUom: barcode.itemUom,
         type: barcode.type,
       };
 
@@ -167,8 +167,8 @@ export default function ItemBarcodeForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="item_id"
-                value={formData.item_id}
+                name="itemId"
+                value={formData.itemId}
                 onChange={handleFormChange}
               />
               <TextField
@@ -178,8 +178,8 @@ export default function ItemBarcodeForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="item_uom"
-                value={formData.item_uom}
+                name="itemUom"
+                value={formData.itemUom}
                 onChange={handleFormChange}
               />
               <TextField

@@ -27,7 +27,7 @@ export default function UserForm(props) {
     username: "",
     password: "",
     name: "",
-    contact_no: "",
+    contactNo: "",
     email: "",
     status: "",
     role: "",
@@ -42,7 +42,7 @@ export default function UserForm(props) {
         username: user.username,
         password: user.password,
         name: user.name,
-        contact_no: user.contact_no,
+        contactNo: user.contactNo,
         email: user.email,
         status: user.status,
         role: user.role,
@@ -183,8 +183,8 @@ export default function UserForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="contact_no"
-                value={formData.contact_no}
+                name="contactNo"
+                value={formData.contactNo}
                 onChange={handleFormChange}
               />
             </div>

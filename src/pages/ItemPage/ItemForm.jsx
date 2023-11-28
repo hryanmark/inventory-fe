@@ -57,7 +57,7 @@ export default function ItemForm(props) {
   const [brand, setBrand] = useState(null);
   const [category, setCategory] = useState(null);
   const [status, setStatus] = useState("");
-  const [created_by, setCreatedBy] = useState(null);
+  const [createdBy, setCreatedBy] = useState(null);
   const [updated_by, setUpdatedBy] = useState(null);
   const [unitOfMeasure, setUnitOfMeasure] = useState([]); //array of object
 
@@ -68,19 +68,19 @@ export default function ItemForm(props) {
 
   const [formData, setFormData] = useState({
     // id: 0, //updated via tmp_item_id
-    brand_id: "",
-    category_id: "",
+    brandId: "",
+    categoryId: "",
     title: " ", //item name
     description: " ",
     sku: "IT-5",
-    base_uom: " ",
-    sales_uom: " ",
-    purchase_uom: " ",
-    unit_cost: "0",
-    minimum_stock_level: "0",
-    maximum_stock_level: "0",
+    baseUom: " ",
+    salesUom: " ",
+    purchaseUom: " ",
+    unitCost: "0",
+    minimumStockLevel: "0",
+    maximumStockLevel: "0",
     status: "",
-    created_by: "",
+    createdBy: "",
     updated_by: "",
     created_at: format(new Date(), dateTimeFormat),
     updated_at: format(new Date(), dateTimeFormat),
@@ -99,26 +99,26 @@ export default function ItemForm(props) {
     const itemData = JSON.parse(localStorage.getItem("itemData"));
 
     for (const item of itemData) {
-      fetchBrandById(item.brand_id);
-      fetchCategoryById(item.category_id);
-      fetchUserCreatedByById(item.created_by);
+      fetchBrandById(item.brandId);
+      fetchCategoryById(item.categoryId);
+      fetchUserCreatedByById(item.createdBy);
       fetchUserUpdatedByById(item.updated_by);
 
       const existingData = {
         id: item.id, //auto generated
-        brand_id: item.brand_id,
-        category_id: item.category_id,
+        brandId: item.brandId,
+        categoryId: item.categoryId,
         title: item.title, //item name
         description: item.description,
         sku: item.sku,
-        base_uom: item.base_uom,
-        sales_uom: item.sales_uom,
-        purchase_uom: item.purchase_uom,
-        unit_cost: item.unit_cost,
-        minimum_stock_level: item.minimum_stock_level,
-        maximum_stock_level: item.maximum_stock_level,
+        baseUom: item.baseUom,
+        salesUom: item.salesUom,
+        purchaseUom: item.purchaseUom,
+        unitCost: item.unitCost,
+        minimumStockLevel: item.minimumStockLevel,
+        maximumStockLevel: item.maximumStockLevel,
         status: item.status,
-        created_by: item.created_by,
+        createdBy: item.createdBy,
         updated_by: item.updated_by,
         created_at: item.created_at,
         updated_at:
@@ -186,25 +186,25 @@ export default function ItemForm(props) {
         newErrors.category = true;
       }
       if (
-        formData.unit_cost === "0" ||
-        formData.unit_cost === " " ||
-        formData.unit_cost === ""
+        formData.unitCost === "0" ||
+        formData.unitCost === " " ||
+        formData.unitCost === ""
       ) {
-        newErrors.unit_cost = true;
+        newErrors.unitCost = true;
       }
       if (
-        formData.minimum_stock_level === "0" ||
-        formData.minimum_stock_level === " " ||
-        formData.minimum_stock_level === ""
+        formData.minimumStockLevel === "0" ||
+        formData.minimumStockLevel === " " ||
+        formData.minimumStockLevel === ""
       ) {
-        newErrors.minimum_stock_level = true;
+        newErrors.minimumStockLevel = true;
       }
       if (
-        formData.maximum_stock_level === "0" ||
-        formData.maximum_stock_level === " " ||
-        formData.maximum_stock_level === ""
+        formData.maximumStockLevel === "0" ||
+        formData.maximumStockLevel === " " ||
+        formData.maximumStockLevel === ""
       ) {
-        newErrors.maximum_stock_level = true;
+        newErrors.maximumStockLevel = true;
       }
       if (
         formData.status === "0" ||
@@ -214,11 +214,11 @@ export default function ItemForm(props) {
         newErrors.status = true;
       }
       if (
-        formData.created_by === "0" ||
-        formData.created_by === " " ||
-        formData.created_by === ""
+        formData.createdBy === "0" ||
+        formData.createdBy === " " ||
+        formData.createdBy === ""
       ) {
-        newErrors.created_by = true;
+        newErrors.createdBy = true;
       }
       if (
         formData.updated_by === "0" ||
@@ -229,7 +229,7 @@ export default function ItemForm(props) {
       }
       if (Object.keys(newErrors).length > 0) {
         setFormError(newErrors);
-        alert("there is error");
+        alert("Required field must not be empty.");
         return;
       }
 
@@ -262,7 +262,7 @@ export default function ItemForm(props) {
 
       setBrand(selectedBrandObject);
 
-      setFormData({ ...formData, brand_id: brandId });
+      setFormData({ ...formData, brandId: brandId });
     }
   };
 
@@ -287,7 +287,7 @@ export default function ItemForm(props) {
       const categoryId = selectedCategoryObject.id;
 
       setCategory(selectedCategoryObject);
-      setFormData({ ...formData, category_id: categoryId });
+      setFormData({ ...formData, categoryId: categoryId });
     }
   };
 
@@ -344,7 +344,7 @@ export default function ItemForm(props) {
       const userId = seletedUserObject.id;
 
       setCreatedBy(seletedUserObject);
-      setFormData({ ...formData, created_by: userId });
+      setFormData({ ...formData, createdBy: userId });
     }
   };
 
@@ -525,7 +525,7 @@ export default function ItemForm(props) {
     if (brand) {
       const brandObject = brand_data.find((brnd) => brnd.code === brand.code);
       if (brandObject) {
-        setFormData({ ...formData, brand_id: brandObject.id });
+        setFormData({ ...formData, brandId: brandObject.id });
       }
     }
     // eslint-disable-next-line
@@ -538,7 +538,7 @@ export default function ItemForm(props) {
         (ctgry) => ctgry.code === category.code
       );
       if (categoryObject) {
-        setFormData({ ...formData, category_id: categoryObject.id });
+        setFormData({ ...formData, categoryId: categoryObject.id });
       }
     }
     // eslint-disable-next-line
@@ -594,6 +594,7 @@ export default function ItemForm(props) {
                 name="title"
                 value={formData.title}
                 onChange={handleFormChange}
+                disabled={mode === "view" ? true : false}
               />
               <Box sx={{ mt: 3, width: "30%" }}>
                 <FormControl error={formError.brand} required fullWidth>
@@ -680,11 +681,12 @@ export default function ItemForm(props) {
                 placeholder="Description"
                 value={formData.description}
                 onChange={handleFormChange}
+                disabled={mode === "view" ? true : false}
               />
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <TextField
-                error={formError.unit_cost}
+                error={formError.unitCost}
                 required
                 label="Unit Cost"
                 id="outlined-basic"
@@ -693,12 +695,12 @@ export default function ItemForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="unit_cost"
-                value={formData.unit_cost}
+                name="unitCost"
+                value={formData.unitCost}
                 onChange={handleFormChange}
               />
               <TextField
-                error={formError.minimum_stock_level}
+                error={formError.minimumStockLevel}
                 required
                 label="Minimum Stock"
                 id="outlined-basic"
@@ -707,12 +709,12 @@ export default function ItemForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="minimum_stock_level"
-                value={formData.minimum_stock_level}
+                name="minimumStockLevel"
+                value={formData.minimumStockLevel}
                 onChange={handleFormChange}
               />
               <TextField
-                error={formError.maximum_stock_level}
+                error={formError.maximumStockLevel}
                 required
                 label="Maximum Stock"
                 id="outlined-basic"
@@ -721,8 +723,8 @@ export default function ItemForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="maximum_stock_level"
-                value={formData.maximum_stock_level}
+                name="maximumStockLevel"
+                value={formData.maximumStockLevel}
                 onChange={handleFormChange}
               />
               <Box sx={{ mt: 2.5, mr: 1, ml: 1, width: "25%" }}>
@@ -843,8 +845,8 @@ export default function ItemForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="base_uom"
-                value={formData.base_uom}
+                name="baseUom"
+                value={formData.baseUom}
                 onChange={handleFormChange}
               />
             </div>
@@ -857,8 +859,8 @@ export default function ItemForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="sales_uom"
-                value={formData.sales_uom}
+                name="salesUom"
+                value={formData.salesUom}
                 onChange={handleFormChange}
               />
             </div>
@@ -871,21 +873,21 @@ export default function ItemForm(props) {
                 variant="outlined"
                 size="small"
                 disabled={mode === "view" ? true : false}
-                name="purchase_uom"
-                value={formData.purchase_uom}
+                name="purchaseUom"
+                value={formData.purchaseUom}
                 onChange={handleFormChange}
               />
             </div>
             <div style={{ display: "flex", marginRight: "10%" }}>
               <Box sx={{ mt: 2.5, mr: 1, ml: 5, width: "50%" }}>
-                <FormControl error={formError.created_by} required fullWidth>
+                <FormControl error={formError.createdBy} required fullWidth>
                   <InputLabel id="demo-simple-select-label" size="small">
                     Created By
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={created_by ? created_by.name : " "}
+                    value={createdBy ? createdBy.name : " "}
                     label="Created By"
                     onChange={onCreatedByChange}
                     size="small"

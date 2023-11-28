@@ -13,8 +13,8 @@ export default function ItemBarcodePage() {
   const pageName = "Item Barcode";
   const [data, setData] = useState({
     id: "",
-    item_id: "",
-    item_uom: "",
+    itemId: "",
+    itemUom: "",
     type: "",
     code: "",
   });
@@ -34,11 +34,17 @@ export default function ItemBarcodePage() {
     setSelectedRows(selectedRowsData);
   };
 
-  const toTitleCase = (str) => {
-    return str
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  const separatePascalCase = ( inputString) => {
+    // Use a regular expression to find capital letters and insert a space before them
+    const separated =  inputString.replace(/([A-Z])/g, ' $1').trim();
+    
+    const words = separated.split(' ');
+
+    const capitalized = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+
+    const result = capitalized.join(' ');
+
+    return result;
   }
 
   const fetchData = async () => {
@@ -51,7 +57,7 @@ export default function ItemBarcodePage() {
         const keys = Object.keys(result[0]);
         const generatedColumns = keys.map((key) => ({
           field: key,
-          headerName: toTitleCase(key),
+          headerName: separatePascalCase(key),
           width: 150,
         }));
 

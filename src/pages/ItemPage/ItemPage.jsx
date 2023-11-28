@@ -14,22 +14,22 @@ export default function ItemPage() {
   const pageName = "Item List";
   const [data, setData] = useState({
     id: "",
-    brand_id: "",
-    category_id: "",
+    brandId: "",
+    categoryId: "",
     title: "",
     description: "",
-    SKU: "",
-    base_uom: "",
-    sales_uom: "",
-    purchase_uom: "",
-    unit_cost: "",
-    minimum_stock_level: "",
-    maximum_stock_level: "",
+    sku: "",
+    baseUom: "",
+    salesUom: "",
+    purchaseUom: "",
+    unitCost: "",
+    minimumStockLevel: "",
+    maximumStockLevel: "",
     status: "",
-    created_by: "",
-    updated_by: "",
-    created_at: "",
-    updated_at: "",
+    createdBy: "",
+    updatedBy: "",
+    createdAt: "",
+    updatedAt: "",
   });
   const [selectedRows, setSelectedRows] = useState([]);
   const [alertState, setAlertState] = useState({
@@ -51,11 +51,17 @@ export default function ItemPage() {
     setSelectedRows(selectedRowsData);
   };
 
-  const toTitleCase = (str) => {
-    return str
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  const separatePascalCase = ( inputString) => {
+    // Use a regular expression to find capital letters and insert a space before them
+    const separated =  inputString.replace(/([A-Z])/g, ' $1').trim();
+    
+    const words = separated.split(' ');
+
+    const capitalized = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+
+    const result = capitalized.join(' ');
+
+    return result;
   }
 
   const fetchData = async () => {
@@ -68,7 +74,7 @@ export default function ItemPage() {
         const keys = Object.keys(result[0]);
         const generatedColumns = keys.map((key) => ({
           field: key,
-          headerName: toTitleCase(key),
+          headerName: separatePascalCase(key),
           width: 150,
         }));
 
